@@ -14,7 +14,7 @@ class ProfilSekolahSeeder extends Seeder
     {
         ProfilSekolah::create([
             'nama_sekolah' => 'SMK YPC Tasikmalaya',
-            'kepala_sekolah' => 'Drs. H. Ujang Suherman, M.Pd.',
+            'kepala_sekolah' => 'Drs. Ujang Sanusi, M.M.',
             'foto' => 'gedung_sekolah.jpg',
             'logo' => 'logo_sekolah.png',
             'npsn' => '20210890',

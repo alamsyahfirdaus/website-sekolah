@@ -14,8 +14,6 @@ class Ekstrakurikuler extends Model
 
     protected $table = 'ekstrakurikuler';
 
-    protected $primaryKey = 'id_ekskul';
-
     protected $fillable = [
         'nama_ekskul',
         'id_guru',

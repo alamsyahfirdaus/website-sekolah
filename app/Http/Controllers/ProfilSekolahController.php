@@ -8,63 +8,50 @@ use App\Http\Requests\UpdateProfilSekolahRequest;
 
 class ProfilSekolahController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
+        $profilSekolah = ProfilSekolah::first();
+
         $data = [
-            'title' => 'Profil Sekolah'
+            'title' => 'Profil Sekolah',
+            'profilSekolah' => $profilSekolah
         ];
 
         return view('admin.profil', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function edit($id)
     {
-        //
+        $profilSekolah = ProfilSekolah::findOrFail($id);
+
+        $data = [
+            'title'         => 'Edit Profil Sekolah',
+            'profilSekolah' => $profilSekolah
+        ];
+
+        return view('admin.profil-edit', $data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreProfilSekolahRequest $request)
+    public function update(UpdateProfilSekolahRequest $request, $id)
     {
-        //
-    }
+        echo "Update Profil Sekolah dengan ID: " . $id;
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ProfilSekolah $profilSekolah)
-    {
-        //
-    }
+        // $profilSekolah = ProfilSekolah::findOrFail($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ProfilSekolah $profilSekolah)
-    {
-        //
-    }
+        // $validatedData = $request->validated();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateProfilSekolahRequest $request, ProfilSekolah $profilSekolah)
-    {
-        //
-    }
+        // if ($request->hasFile('logo')) {
+        //     // Hapus logo lama jika ada
+        //     if ($profilSekolah->logo && file_exists(public_path('storage/' . $profilSekolah->logo))) {
+        //         unlink(public_path('storage/' . $profilSekolah->logo));
+        //     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ProfilSekolah $profilSekolah)
-    {
-        //
+        //     // Simpan logo baru
+        //     $validatedData['logo'] = $request->file('logo')->store('logos', 'public');
+        // }
+
+        // $profilSekolah->update($validatedData);
+
+        // return redirect()->route('admin.profil')->with('success', 'Profil sekolah berhasil diperbarui.');
     }
 }

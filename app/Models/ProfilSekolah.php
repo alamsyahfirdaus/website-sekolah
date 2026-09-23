@@ -13,8 +13,6 @@ class ProfilSekolah extends Model
 
     protected $table = 'profil_sekolah';
 
-    protected $primaryKey = 'id_profil';
-
     protected $fillable = [
         'nama_sekolah',
         'kepala_sekolah',

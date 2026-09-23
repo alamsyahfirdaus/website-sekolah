@@ -179,7 +179,7 @@
                 <!--begin::Brand Link-->
                 <a href="./index.html" class="brand-link">
                     <!--begin::Brand Image-->
-                    <img src="{{ asset('img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
+                    <img src="{{ asset('img/smk-ypc.png') }}" alt="AdminLTE Logo"
                         class="brand-image opacity-75 shadow" />
                     <!--end::Brand Image-->
                     <!--begin::Brand Text-->
@@ -202,8 +202,8 @@
                                 <p>Dashboard</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.profil') }}" class="nav-link {{ request()->routeIs('admin.profil') ? 'active' : '' }}">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.profil') }}" class="nav-link {{ request()->routeIs('admin.profil') || request()->segment(2) == 'profil' ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-circle-fill"></i>
                                 <p>Profil Sekolah</p>
                             </a>
@@ -227,7 +227,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.ekstakurikuler') }}" class="nav-link {{ request()->routeIs('admin.ekstakurikuler') ? 'active' : '' }}">
+                            <a href="{{ route('admin.ekstrakurikuler') }}" class="nav-link {{ request()->routeIs('admin.ekstakurikuler') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-circle-fill"></i>
                                 <p>Kelola Ekstrakurikuler</p>
                             </a>
@@ -253,10 +253,10 @@
                 <div class="container-fluid">
                     <!--begin::Row-->
                     <div class="row">
-                        {{-- <div class="col-sm-6">
-                            <h1 class="mb-0 fs-3">Dashboard</h1>
-                        </div>
                         <div class="col-sm-6">
+                            <h1 class="mb-0 fs-3">@yield('title')</h1>
+                        </div>
+                        {{-- <div class="col-sm-6">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb float-sm-end">
                                     <li class="breadcrumb-item"><a href="#">Home</a></li>

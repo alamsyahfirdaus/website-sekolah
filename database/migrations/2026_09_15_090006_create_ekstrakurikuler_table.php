@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ekstrakurikuler', function (Blueprint $table) {
-            $table->id('id_ekskul');
+            $table->id('id');
             $table->string('nama_ekskul', 40);
-            $table->foreignId('id_guru')->constrained('guru', 'id_guru')->onDelete('cascade');
+            $table->foreignId('id_guru')->constrained('guru', 'id')->onDelete('cascade');
             $table->string('jadwal_latihan', 40);
             $table->text('deskripsi')->nullable();
             $table->string('gambar', 100)->nullable();
