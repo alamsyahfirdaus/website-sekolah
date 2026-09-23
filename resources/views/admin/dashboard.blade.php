@@ -1,4 +1,4 @@
-@extends('admin_app')
+@extends('app')
 @section('title', $title)
 
 @section('content')
