@@ -126,40 +126,23 @@
                     <li class="nav-item dropdown user-menu">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img src="{{ asset('img/user2-160x160.jpg') }}" class="user-image rounded-circle shadow"
-                                alt="Alexander Pierce" />
-                            <span class="d-none d-md-inline">Alexander Pierce</span>
+                                alt="{{ Auth::user()->name ?? 'User' }}" />
+                            <span class="d-none d-md-inline">{{ Auth::user()->name ?? 'Administrator' }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                             <!--begin::User Image-->
                             <li class="user-header text-bg-primary">
                                 <img src="{{ asset('img/user2-160x160.jpg') }}" class="rounded-circle shadow"
-                                    alt="Alexander Pierce" />
+                                    alt="{{ Auth::user()->name ?? 'User' }}" />
                                 <p>
-                                    Alexander Pierce - Web Developer
-                                    <small>Member since Nov. 2023</small>
+                                    {{ Auth::user()->name ?? 'Administrator' }}
+                                    <small>{{ Auth::user()->email ?? 'admin@sekolah.sch.id' }}</small>
                                 </p>
                             </li>
                             <!--end::User Image-->
-                            <!--begin::Menu Body-->
-                            <li class="user-body">
-                                <!--begin::Row-->
-                                <div class="row">
-                                    <div class="col-4 text-center">
-                                        <a href="#">Followers</a>
-                                    </div>
-                                    <div class="col-4 text-center">
-                                        <a href="#">Sales</a>
-                                    </div>
-                                    <div class="col-4 text-center">
-                                        <a href="#">Friends</a>
-                                    </div>
-                                </div>
-                                <!--end::Row-->
-                            </li>
-                            <!--end::Menu Body-->
                             <!--begin::Menu Footer-->
                             <li class="user-footer">
-                                <a href="#" class="btn btn-outline-secondary">Profile</a>
+                                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
                                 <a href="{{ route('logout') }}" class="btn btn-outline-danger float-end">Logout</a>
                             </li>
                             <!--end::Menu Footer-->
@@ -177,9 +160,9 @@
             <!--begin::Sidebar Brand-->
             <div class="sidebar-brand">
                 <!--begin::Brand Link-->
-                <a href="./index.html" class="brand-link">
+                <a href="{{ route('admin.dashboard') }}" class="brand-link">
                     <!--begin::Brand Image-->
-                    <img src="{{ asset('img/smk-ypc.png') }}" alt="AdminLTE Logo"
+                    <img src="{{ asset('img/smk-ypc.png') }}" alt="Logo Sekolah"
                         class="brand-image opacity-75 shadow" />
                     <!--end::Brand Image-->
                     <!--begin::Brand Text-->
@@ -198,43 +181,43 @@
                         id="navigation">
                         <li class="nav-item">
                             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <i class="nav-icon bi bi-speedometer2"></i>
                                 <p>Dashboard</p>
                             </a>
                         </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.profil') }}" class="nav-link {{ request()->routeIs('admin.profil') || request()->segment(2) == 'profil' ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle-fill"></i>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.profil') }}" class="nav-link {{ request()->routeIs('admin.profil') || request()->routeIs('profil.*') || request()->is('admin/profil*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-building"></i>
                                 <p>Profil Sekolah</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.guru') }}" class="nav-link {{ request()->routeIs('admin.guru') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle-fill"></i>
+                            <a href="{{ route('admin.guru') }}" class="nav-link {{ request()->routeIs('admin.guru') || request()->routeIs('guru.*') || request()->is('admin/guru*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-person-badge"></i>
                                 <p>Kelola Guru</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.siswa') }}" class="nav-link {{ request()->routeIs('admin.siswa') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle-fill"></i>
+                            <a href="{{ route('admin.siswa') }}" class="nav-link {{ request()->routeIs('admin.siswa') || request()->routeIs('siswa.*') || request()->is('admin/siswa*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-people-fill"></i>
                                 <p>Kelola Siswa</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.berita') }}" class="nav-link {{ request()->routeIs('admin.berita') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle-fill"></i>
+                            <a href="{{ route('admin.berita') }}" class="nav-link {{ request()->routeIs('admin.berita') || request()->routeIs('berita.*') || request()->is('admin/berita*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-newspaper"></i>
                                 <p>Kelola Berita</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.ekstrakurikuler') }}" class="nav-link {{ request()->routeIs('admin.ekstakurikuler') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle-fill"></i>
+                            <a href="{{ route('admin.ekstrakurikuler') }}" class="nav-link {{ request()->routeIs('admin.ekstrakurikuler') || request()->routeIs('ekstrakurikuler.*') || request()->is('admin/ekstrakurikuler*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-trophy-fill"></i>
                                 <p>Kelola Ekstrakurikuler</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.galeri') }}" class="nav-link {{ request()->routeIs('admin.galeri') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle-fill"></i>
+                            <a href="{{ route('admin.galeri') }}" class="nav-link {{ request()->routeIs('admin.galeri') || request()->routeIs('galeri.*') || request()->is('admin/galeri*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-images"></i>
                                 <p>Kelola Galeri</p>
                             </a>
                         </li>
@@ -256,14 +239,6 @@
                         <div class="col-sm-6">
                             <h1 class="mb-0 fs-3">@yield('title')</h1>
                         </div>
-                        {{-- <div class="col-sm-6">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb float-sm-end">
-                                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-                                </ol>
-                            </nav>
-                        </div> --}}
                     </div>
                     <!--end::Row-->
                 </div>
@@ -272,8 +247,37 @@
             <!--end::App Content Header-->
             <!--begin::App Content-->
             <div class="app-content">
-                @yield('content')
+                <div class="container-fluid">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong><i class="bi bi-exclamation-octagon-fill me-2"></i>Terdapat kesalahan input:</strong>
+                            <ul class="mb-0 mt-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @yield('content')
+                </div>
             </div>
+            <!--end::App Content-->
             <!--end::App Content-->
         </main>
         <!--end::App Main-->

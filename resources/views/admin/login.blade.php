@@ -100,28 +100,54 @@
         <!-- /.login-logo -->
         <div class="card">
             <div class="card-body login-card-body">
-                <p class="login-box-msg">Masuk Akun Sekarang</p>
+                <p class="login-box-msg">Masuk ke Panel Administrasi</p>
+
+                @if (session('success'))
+                    <div class="alert alert-success py-2 small mb-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger py-2 small mb-3">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ session('error') }}
+                    </div>
+                @endif
 
                 <form action="{{ route('proses.login') }}" method="post">
                     @csrf
                     <label class="visually-hidden" for="email">Email</label>
-                    <div class="input-group mb-4">
-                        <input id="email" type="text" name="email" class="form-control" placeholder="Email" />
+                    <div class="input-group mb-3">
+                        <input id="email" type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="Email (contoh: admin@sekolah.sch.id)" required />
                         <div class="input-group-text">
                             <span class="bi bi-envelope"></span>
                         </div>
-                        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        @error('email')
+                            <div class="invalid-feedback d-block text-start">{{ $message }}</div>
+                        @enderror
                     </div>
+
                     <label class="visually-hidden" for="password">Password</label>
                     <div class="input-group mb-4">
-                        <input id="password" type="password" name="password" class="form-control" placeholder="Password" />
+                        <input id="password" type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password (default: password)" required />
                         <div class="input-group-text">
                             <span class="bi bi-lock-fill"></span>
                         </div>
+                        @error('password')
+                            <div class="invalid-feedback d-block text-start">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Masuk
+                    </button>
                 </form>
+
+                <div class="text-center mt-3">
+                    <a href="{{ url('/') }}" class="small text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali ke Beranda
+                    </a>
+                </div>
             </div>
             <!-- /.login-card-body -->
         </div>

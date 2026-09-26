@@ -26,6 +26,6 @@ class Guru extends Model
      */
     public function ekstrakurikuler(): HasMany
     {
-        return $this->hasMany(Ekstrakurikuler::class, 'id_guru', 'id_guru');
+        return $this->hasMany(Ekstrakurikuler::class, 'id_guru', 'id');
     }
 }

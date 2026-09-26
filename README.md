@@ -1,59 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Website Sekolah — Media Pembelajaran Siswa SMK
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Project ini adalah website administrasi sekolah berbasis **Laravel + AdminLTE v4** yang dirancang khusus sebagai materi praktik dan modul pembelajaran bagi siswa SMK jurusan PPLG / RPL / SIJA.
 
-## About Laravel
+Kode dibuat dengan pola standar Laravel yang **sederhana, bersih, dan mudah dipahami** tanpa arsitektur kompleks (seperti Repository Pattern atau Service Layer yang berlebihan).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Teknologi yang Digunakan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Framework**: Laravel 12
+- **Bahasa Pemrograman**: PHP ^8.2
+- **Basis Data**: MySQL
+- **Template Admin**: AdminLTE v4.9.1 (Bootstrap 5.3 + Bootstrap Icons)
+- **Templating Engine**: Laravel Blade
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🚀 Fitur Sistem
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Autentikasi Admin**:
+   - Login admin & operator (`/login`).
+   - Logout sistem aman dengan proteksi session token.
+2. **Dashboard Statistik**:
+   - Widget Small Box AdminLTE (Total Guru, Total Siswa, Total Berita, Total Ekstrakurikuler, Total Galeri).
+   - Ringkasan profil sekolah dan daftar berita terbaru.
+3. **Profil Sekolah (Bukan CRUD)**:
+   - Menampilkan satu data profil sekolah lengkap (NPSN, Kepala Sekolah, Alamat, Visi Misi, Logo).
+   - Form update profil sekolah dan upload logo / foto gedung.
+4. **Kelola Guru (CRUD Lengkap)**:
+   - Tambah data guru beserta foto.
+   - Tabel data guru dengan thumbnail foto, NIP, mapel.
+   - Pencarian data & pagination.
+   - Detail data guru beserta ekskul yang dibina.
+   - Edit data guru dan konfirmasi hapus data.
+5. **Kelola Siswa (CRUD Lengkap)**:
+   - Tambah, lihat, edit, dan hapus data siswa.
+   - Validasi NISN 10 digit, nama, jenis kelamin, dan angkatan.
+   - Pencarian siswa & pagination.
+6. **Kelola Berita (CRUD Lengkap)**:
+   - Tulis berita baru dengan foto sampul (cover).
+   - Relasi otomatis ke user yang sedang login sebagai penulis.
+   - Detail artikel berita, edit, hapus, dan pagination.
+7. **Kelola Ekstrakurikuler (CRUD Lengkap)**:
+   - Tambah ekskul dengan relasi ke guru pembina (`belongsTo`).
+   - Jadwal latihan, deskripsi, foto kegiatan, edit, dan hapus.
+8. **Kelola Galeri (CRUD Lengkap)**:
+   - Tampilan Card / Grid dokumentasi foto dan video.
+   - Upload file media (foto/video), kategori, tanggal kegiatan, edit, dan hapus.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 📚 Konsep Laravel yang Dipelajari
 
-### Premium Partners
+1. **Route (`routes/web.php`)**:
+   - Mendefinisikan URL dan menghubungkannya ke Controller yang bersangkutan.
+2. **Controller (`app/Http/Controllers/`)**:
+   - Mengatur logika alur data: memproses request, validasi, memanggil model, dan mengirim data ke Blade View.
+3. **Model & Eloquent ORM (`app/Models/`)**:
+   - Representasi tabel database, `$fillable` untuk mass assignment, dan relasi (`belongsTo`, `hasMany`).
+4. **Migration (`database/migrations/`)**:
+   - Merancang skema tabel database dengan kode PHP terstruktur.
+5. **Blade View (`resources/views/`)**:
+   - Menyajikan antarmuka pengguna, templating inheritance (`@extends`, `@section`, `@yield`).
+6. **CRUD & Validasi**:
+   - Create, Read, Update, Delete menggunakan method HTTP (`GET`, `POST`, `PUT`, `DELETE`).
+   - Validasi input form `$request->validate()` dan pesan error `@error`.
+7. **Upload & Manajemen File**:
+   - Menyimpan gambar menggunakan Laravel Storage (`public` disk) dan menghapus file lama saat diupdate.
+8. **Pagination & Pencarian**:
+   - Membatasi jumlah baris per halaman (`paginate(10)`) dan filter query `where(...)`.
+9. **Flash Messages**:
+   - Menampilkan notifikasi sukses/gagal operasi menggunakan `session('success')`.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🔄 Alur Pembelajaran (Request-Response Lifecycle)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Siswa SMK dapat memahami alur kerja fitur dengan urutan mudah berikut:
 
-## Code of Conduct
+```text
+DATABASE ➔ MODEL ➔ CONTROLLER ➔ ROUTE ➔ BLADE VIEW ➔ USER
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Contoh Alur: Menampilkan Data Guru (`/admin/guru`)
 
-## Security Vulnerabilities
+1. **User** membuka URL browser: `http://localhost:8000/admin/guru`.
+2. **Route** (`routes/web.php`) mendeteksi request dan memanggil:
+   ```php
+   Route::get('/admin/guru', [GuruController::class, 'index'])->name('admin.guru');
+   ```
+3. **Controller** (`GuruController@index`) menjalankan query Model:
+   ```php
+   $gurus = Guru::latest()->paginate(10);
+   ```
+4. **Model** (`App\Models\Guru`) mengambil data dari tabel `guru` di MySQL.
+5. **Controller** mengirim data `$gurus` ke view:
+   ```php
+   return view('admin.guru.index', ['gurus' => $gurus]);
+   ```
+6. **Blade View** (`resources/views/admin/guru/index.blade.php`) merender tabel HTML dan komponen AdminLTE.
+7. **User** melihat daftar guru di layar browser.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🔑 Akun Default untuk Pengujian
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Email**: `admin@sekolah.sch.id`
+- **Password**: `password`
+- **Role**: `Admin`
+
+---
+
+## 💻 Panduan Menjalankan Project
+
+1. Pastikan server web dan database MySQL telah berjalan (XAMPP / Laragon / Native).
+2. Salin file `.env.example` menjadi `.env` dan sesuaikan koneksi database (`DB_DATABASE=db_profil_sekolah`).
+3. Jalankan migrasi dan seeder awal:
+   ```bash
+   php artisan migrate --seed
+   ```
+4. Hubungkan folder storage publik:
+   ```bash
+   php artisan storage:link
+   ```
+5. Jalankan server lokal:
+   ```bash
+   php artisan serve
+   ```
+6. Buka di browser: `http://127.0.0.1:8000`.
