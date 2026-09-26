@@ -1,125 +1,95 @@
-# Website Sekolah — Media Pembelajaran Siswa SMK
+# Website Sekolah
 
-Project ini adalah website administrasi sekolah berbasis **Laravel + AdminLTE v4** yang dirancang khusus sebagai materi praktik dan modul pembelajaran bagi siswa SMK jurusan PPLG / RPL / SIJA.
-
-Kode dibuat dengan pola standar Laravel yang **sederhana, bersih, dan mudah dipahami** tanpa arsitektur kompleks (seperti Repository Pattern atau Service Layer yang berlebihan).
+Project website administrasi sekolah berbasis **Laravel + AdminLTE + DataTables** yang dirancang sebagai materi pembelajaran praktis, sederhana, dan mudah dipelajari untuk siswa SMK.
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## Teknologi
 
-- **Framework**: Laravel 12
-- **Bahasa Pemrograman**: PHP ^8.2
-- **Basis Data**: MySQL
-- **Template Admin**: AdminLTE v4.9.1 (Bootstrap 5.3 + Bootstrap Icons)
-- **Templating Engine**: Laravel Blade
-
----
-
-## 🚀 Fitur Sistem
-
-1. **Autentikasi Admin**:
-   - Login admin & operator (`/login`).
-   - Logout sistem aman dengan proteksi session token.
-2. **Dashboard Statistik**:
-   - Widget Small Box AdminLTE (Total Guru, Total Siswa, Total Berita, Total Ekstrakurikuler, Total Galeri).
-   - Ringkasan profil sekolah dan daftar berita terbaru.
-3. **Profil Sekolah (Bukan CRUD)**:
-   - Menampilkan satu data profil sekolah lengkap (NPSN, Kepala Sekolah, Alamat, Visi Misi, Logo).
-   - Form update profil sekolah dan upload logo / foto gedung.
-4. **Kelola Guru (CRUD Lengkap)**:
-   - Tambah data guru beserta foto.
-   - Tabel data guru dengan thumbnail foto, NIP, mapel.
-   - Pencarian data & pagination.
-   - Detail data guru beserta ekskul yang dibina.
-   - Edit data guru dan konfirmasi hapus data.
-5. **Kelola Siswa (CRUD Lengkap)**:
-   - Tambah, lihat, edit, dan hapus data siswa.
-   - Validasi NISN 10 digit, nama, jenis kelamin, dan angkatan.
-   - Pencarian siswa & pagination.
-6. **Kelola Berita (CRUD Lengkap)**:
-   - Tulis berita baru dengan foto sampul (cover).
-   - Relasi otomatis ke user yang sedang login sebagai penulis.
-   - Detail artikel berita, edit, hapus, dan pagination.
-7. **Kelola Ekstrakurikuler (CRUD Lengkap)**:
-   - Tambah ekskul dengan relasi ke guru pembina (`belongsTo`).
-   - Jadwal latihan, deskripsi, foto kegiatan, edit, dan hapus.
-8. **Kelola Galeri (CRUD Lengkap)**:
-   - Tampilan Card / Grid dokumentasi foto dan video.
-   - Upload file media (foto/video), kategori, tanggal kegiatan, edit, dan hapus.
+- **Laravel**: Framework backend MVC PHP
+- **PHP**: ^8.2
+- **MySQL**: Basis data relasional
+- **Blade**: Templating engine Laravel
+- **AdminLTE**: Template antarmuka admin responsif (Bootstrap 5)
+- **DataTables**: Plugin tabel interaktif (Search, Sort, Pagination sisi klien)
 
 ---
 
-## 📚 Konsep Laravel yang Dipelajari
+## Fitur
 
-1. **Route (`routes/web.php`)**:
-   - Mendefinisikan URL dan menghubungkannya ke Controller yang bersangkutan.
-2. **Controller (`app/Http/Controllers/`)**:
-   - Mengatur logika alur data: memproses request, validasi, memanggil model, dan mengirim data ke Blade View.
-3. **Model & Eloquent ORM (`app/Models/`)**:
-   - Representasi tabel database, `$fillable` untuk mass assignment, dan relasi (`belongsTo`, `hasMany`).
-4. **Migration (`database/migrations/`)**:
-   - Merancang skema tabel database dengan kode PHP terstruktur.
-5. **Blade View (`resources/views/`)**:
-   - Menyajikan antarmuka pengguna, templating inheritance (`@extends`, `@section`, `@yield`).
-6. **CRUD & Validasi**:
-   - Create, Read, Update, Delete menggunakan method HTTP (`GET`, `POST`, `PUT`, `DELETE`).
-   - Validasi input form `$request->validate()` dan pesan error `@error`.
-7. **Upload & Manajemen File**:
-   - Menyimpan gambar menggunakan Laravel Storage (`public` disk) dan menghapus file lama saat diupdate.
-8. **Pagination & Pencarian**:
-   - Membatasi jumlah baris per halaman (`paginate(10)`) dan filter query `where(...)`.
-9. **Flash Messages**:
-   - Menampilkan notifikasi sukses/gagal operasi menggunakan `session('success')`.
+1. **Login & Logout**: Sistem autentikasi aman dengan session dan proteksi CSRF.
+2. **Dashboard**: Menampilkan statistik hitungan data langsung dari database menggunakan AdminLTE Small Box.
+3. **Profil Sekolah**: Mengelola satu data profil sekolah, visi misi, serta unggah logo dan foto gedung sekolah (bukan CRUD biasa).
+4. **Guru**: CRUD tenaga pendidik dengan foto, NIP, nama, dan mapel.
+5. **Siswa**: CRUD data siswa dengan NISN, nama, jenis kelamin, dan tahun masuk.
+6. **Berita**: CRUD berita dan artikel sekolah dengan unggah foto sampul.
+7. **Ekstrakurikuler**: CRUD kegiatan ekskul sekolah beserta guru pembinanya.
+8. **Galeri**: CRUD dokumentasi kegiatan sekolah berupa foto dan video.
 
 ---
 
-## 🔄 Alur Pembelajaran (Request-Response Lifecycle)
+## Konsep yang Dipelajari
 
-Siswa SMK dapat memahami alur kerja fitur dengan urutan mudah berikut:
+- **Routing**: Pengelompokan rute admin dengan middleware auth (`Route::middleware('auth')->prefix('admin')`).
+- **Middleware**: Membatasi akses pengguna yang belum login agar diarahkan ke halaman login.
+- **Controller**: Mengatur alur logika data dengan metode sederhana (`index`, `save`, `show`, `destroy`).
+- **Model**: Representasi tabel database dan mass assignment (`$fillable`).
+- **Migration**: Pembuatan struktur tabel dan tipe data secara terstruktur.
+- **Eloquent**: Relasi antar tabel (`belongsTo`, `hasMany`).
+- **Blade**: Master layout, pemisahan komponen (`@extends`, `@section`, `@yield`).
+- **CRUD**: Pola gabungan Tambah dan Ubah dalam satu metode `save(Request $request, $id = null)` dan satu tampilan `form.blade.php`.
+- **Validation**: Memvalidasi input pengguna secara deklaratif (`$request->validate()`) dan menampilkan pesan error di form.
+- **Upload File**: Mengunggah foto/gambar ke direktori publik (`storage`) dan menghapus file lama saat diperbarui.
+- **DataTables**: Mengelola pencarian instan, pengurutan kolom, dan pagination secara otomatis di sisi browser tanpa query manual di Controller.
+- **Authentication**: Manajemen otentikasi login, regenerasi session, dan logout.
+
+---
+
+## Alur CRUD
+
+Proses pengelolaan data berjalan dengan alur:
 
 ```text
-DATABASE ➔ MODEL ➔ CONTROLLER ➔ ROUTE ➔ BLADE VIEW ➔ USER
+Form
+ ↓
+Route
+ ↓
+Controller
+ ↓
+Model
+ ↓
+Database
 ```
 
-### Contoh Alur: Menampilkan Data Guru (`/admin/guru`)
-
-1. **User** membuka URL browser: `http://localhost:8000/admin/guru`.
-2. **Route** (`routes/web.php`) mendeteksi request dan memanggil:
-   ```php
-   Route::get('/admin/guru', [GuruController::class, 'index'])->name('admin.guru');
-   ```
-3. **Controller** (`GuruController@index`) menjalankan query Model:
-   ```php
-   $gurus = Guru::latest()->paginate(10);
-   ```
-4. **Model** (`App\Models\Guru`) mengambil data dari tabel `guru` di MySQL.
-5. **Controller** mengirim data `$gurus` ke view:
-   ```php
-   return view('admin.guru.index', ['gurus' => $gurus]);
-   ```
-6. **Blade View** (`resources/views/admin/guru/index.blade.php`) merender tabel HTML dan komponen AdminLTE.
-7. **User** melihat daftar guru di layar browser.
+### Penjelasan Alur:
+1. **Form (`form.blade.php`)**: Pengguna mengisi data pada form HTML (Tambah atau Ubah).
+2. **Route (`routes/web.php`)**: Menerima request HTTP POST dan meneruskannya ke Controller yang sesuai.
+3. **Controller (`*Controller@save`)**: Melakukan validasi input, menentukan apakah data baru atau data lama berdasarkan parameter ID, mengunggah file jika ada, dan menyimpan data.
+4. **Model (`App\Models\*`)**: Menyediakan akses manipulasi ke tabel database menggunakan Eloquent ORM.
+5. **Database (MySQL)**: Menyimpan record data secara persisten.
 
 ---
 
-## 🔑 Akun Default untuk Pengujian
+## Akun Default untuk Praktik Siswa
 
+- **URL Login**: `http://localhost:8000/login`
 - **Email**: `admin@sekolah.sch.id`
 - **Password**: `password`
-- **Role**: `Admin`
 
 ---
 
-## 💻 Panduan Menjalankan Project
+## Panduan Menjalankan Project
 
-1. Pastikan server web dan database MySQL telah berjalan (XAMPP / Laragon / Native).
-2. Salin file `.env.example` menjadi `.env` dan sesuaikan koneksi database (`DB_DATABASE=db_profil_sekolah`).
-3. Jalankan migrasi dan seeder awal:
+1. Pastikan server web dan database MySQL telah berjalan (XAMPP / Laragon).
+2. Salin `.env.example` ke `.env` dan sesuaikan koneksi database:
+   ```env
+   DB_DATABASE=db_profil_sekolah
+   ```
+3. Jalankan migrasi dan seeder:
    ```bash
    php artisan migrate --seed
    ```
-4. Hubungkan folder storage publik:
+4. Hubungkan storage publik:
    ```bash
    php artisan storage:link
    ```
@@ -127,4 +97,4 @@ DATABASE ➔ MODEL ➔ CONTROLLER ➔ ROUTE ➔ BLADE VIEW ➔ USER
    ```bash
    php artisan serve
    ```
-6. Buka di browser: `http://127.0.0.1:8000`.
+6. Buka aplikasi di browser pada: `http://127.0.0.1:8000`.

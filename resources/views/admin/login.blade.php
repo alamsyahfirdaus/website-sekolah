@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>SMA INSTRUKTUR| Login</title>
+    <title>SMA INSTRUKTUR | Login</title>
 
     <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
     <script>
@@ -66,7 +66,7 @@
     <!--begin::Accessibility Features-->
     <!-- Skip links will be dynamically added by accessibility.js -->
     <meta name="supported-color-schemes" content="light dark" />
-    <link rel="preload" href="../css/adminlte.css" as="style" />
+    <link rel="preload" href="{{ asset('css/adminlte.css') }}" as="style" />
     <!--end::Accessibility Features-->
 
     <!--begin::Fonts-->
@@ -95,7 +95,7 @@
 <body class="login-page bg-body-secondary">
     <main class="login-box">
         <h1 class="login-logo">
-            <a href="">SMA INSTRUKTUR</a>
+            <a href="{{ url('/') }}">SMA INSTRUKTUR</a>
         </h1>
         <!-- /.login-logo -->
         <div class="card">
