@@ -13,12 +13,8 @@
                 </h5>
             </div>
 
-            @if(isset($siswa))
-                <form action="{{ route('admin.siswa.save', $siswa->id) }}" method="POST">
-            @else
-                <form action="{{ route('admin.siswa.save') }}" method="POST">
-            @endif
             
+            <form action="{{ route('admin.siswa.save', isset($siswa) ? $siswa->id : null) }}" method="POST">
                 @csrf
 
                 <div class="card-body">

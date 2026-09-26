@@ -90,14 +90,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         // 7. Kelola Siswa
         Route::prefix('siswa')->group(function () {
             Route::get('/', [SiswaController::class, 'index'])->name('admin.siswa.index');
-            // Route::get('/create', [SiswaController::class, 'create'])->name('admin.siswa.create');
-            // Route::get('/{id}/edit', [SiswaController::class, 'edit'])->name('admin.siswa.edit');
-            
             Route::get('/add-edit/{id?}', [SiswaController::class, 'addEdit'])->name('admin.siswa.addEdit');
-            
-            
             Route::post('/save/{id?}', [SiswaController::class, 'save'])->name('admin.siswa.save');
-            
             Route::get('/{id}', [SiswaController::class, 'show'])->name('admin.siswa.show');
             Route::delete('/{id}', [SiswaController::class, 'destroy'])->name('admin.siswa.delete');
         });

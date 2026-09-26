@@ -59,7 +59,7 @@
             </div>
 
             <div class="card-footer d-flex justify-content-end gap-2">
-                <a href="{{ route('admin.siswa.edit', $siswa->id) }}" class="btn btn-warning">
+                <a href="{{ route('admin.siswa.addEdit', $siswa->id) }}" class="btn btn-warning">
                     <i class="bi bi-pencil-square me-1"></i> Edit Data Siswa
                 </a>
             </div>

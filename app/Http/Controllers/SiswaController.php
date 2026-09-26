@@ -41,7 +41,7 @@ class SiswaController extends Controller
 
         // 2. Tentukan model (Tambah atau Ubah)
         if ($id) {
-            $siswa = Siswa::findOrFail($id);
+            $siswa = Siswa::find($id);
         } else {
             $siswa = new Siswa();
         }
@@ -65,7 +65,13 @@ class SiswaController extends Controller
      */
     public function show($id)
     {
-        $siswa = Siswa::findOrFail($id);
+        $siswa = Siswa::find($id);
+
+        if (!$siswa) {
+            return redirect()
+                ->route('admin.siswa.index')
+                ->with('error', 'Data siswa tidak ditemukan.');
+        }
 
         return view('admin.siswa.show', compact('siswa'));
     }
@@ -75,8 +81,15 @@ class SiswaController extends Controller
      */
     public function destroy($id)
     {
-        $siswa = Siswa::findOrFail($id);
-        $siswa->delete();
+        $siswa = Siswa::find($id);
+
+        if (!$siswa) {
+            return redirect()
+                ->route('admin.siswa.index')
+                ->with('error', 'Data siswa tidak ditemukan.');
+        }
+
+    $siswa->delete();
 
         return redirect()
             ->route('admin.siswa.index')
