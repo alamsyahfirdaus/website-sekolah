@@ -8,6 +8,7 @@ use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\ProfilSekolahController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // LANDING PAGE PUBLIK
@@ -28,6 +29,10 @@ Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->nam
 // =========================================================================
 Route::middleware('auth')->prefix('admin')->group(function () {
 
+    // ---------------------------------------------------------------------
+    // A. FITUR BERSAMA (DAPAT DIAKSES OLEH ADMIN & OPERATOR)
+    // ---------------------------------------------------------------------
+
     // 1. Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -36,27 +41,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::post('/profil-sekolah/save', [ProfilSekolahController::class, 'save'])->name('admin.profil-sekolah.save');
     Route::get('/profil', [ProfilSekolahController::class, 'index'])->name('admin.profil');
 
-    // 3. Kelola Guru
-    Route::prefix('guru')->group(function () {
-        Route::get('/', [GuruController::class, 'index'])->name('admin.guru.index');
-        Route::get('/create', [GuruController::class, 'create'])->name('admin.guru.create');
-        Route::get('/{id}/edit', [GuruController::class, 'edit'])->name('admin.guru.edit');
-        Route::post('/save/{id?}', [GuruController::class, 'save'])->name('admin.guru.save');
-        Route::get('/{id}', [GuruController::class, 'show'])->name('admin.guru.show');
-        Route::delete('/{id}', [GuruController::class, 'destroy'])->name('admin.guru.delete');
-    });
-
-    // 4. Kelola Siswa
-    Route::prefix('siswa')->group(function () {
-        Route::get('/', [SiswaController::class, 'index'])->name('admin.siswa.index');
-        Route::get('/create', [SiswaController::class, 'create'])->name('admin.siswa.create');
-        Route::get('/{id}/edit', [SiswaController::class, 'edit'])->name('admin.siswa.edit');
-        Route::post('/save/{id?}', [SiswaController::class, 'save'])->name('admin.siswa.save');
-        Route::get('/{id}', [SiswaController::class, 'show'])->name('admin.siswa.show');
-        Route::delete('/{id}', [SiswaController::class, 'destroy'])->name('admin.siswa.delete');
-    });
-
-    // 5. Kelola Berita
+    // 3. Kelola Berita
     Route::prefix('berita')->group(function () {
         Route::get('/', [BeritaController::class, 'index'])->name('admin.berita.index');
         Route::get('/create', [BeritaController::class, 'create'])->name('admin.berita.create');
@@ -66,7 +51,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::delete('/{id}', [BeritaController::class, 'destroy'])->name('admin.berita.delete');
     });
 
-    // 6. Kelola Ekstrakurikuler
+    // 4. Kelola Ekstrakurikuler
     Route::prefix('ekstrakurikuler')->group(function () {
         Route::get('/', [EkstrakurikulerController::class, 'index'])->name('admin.ekstrakurikuler.index');
         Route::get('/create', [EkstrakurikulerController::class, 'create'])->name('admin.ekstrakurikuler.create');
@@ -76,7 +61,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::delete('/{id}', [EkstrakurikulerController::class, 'destroy'])->name('admin.ekstrakurikuler.delete');
     });
 
-    // 7. Kelola Galeri
+    // 5. Kelola Galeri
     Route::prefix('galeri')->group(function () {
         Route::get('/', [GaleriController::class, 'index'])->name('admin.galeri.index');
         Route::get('/create', [GaleriController::class, 'create'])->name('admin.galeri.create');
@@ -84,5 +69,48 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::post('/save/{id?}', [GaleriController::class, 'save'])->name('admin.galeri.save');
         Route::get('/{id}', [GaleriController::class, 'show'])->name('admin.galeri.show');
         Route::delete('/{id}', [GaleriController::class, 'destroy'])->name('admin.galeri.delete');
+    });
+
+    // ---------------------------------------------------------------------
+    // B. FITUR KHUSUS ADMIN (DILINDUNGI MIDDLEWARE role:admin)
+    // Operator DILARANG mengelola: Guru, Siswa, dan User (Otomatis 403)
+    // ---------------------------------------------------------------------
+    Route::middleware('role:admin')->group(function () {
+
+        // 6. Kelola Guru
+        Route::prefix('guru')->group(function () {
+            Route::get('/', [GuruController::class, 'index'])->name('admin.guru.index');
+            Route::get('/create', [GuruController::class, 'create'])->name('admin.guru.create');
+            Route::get('/{id}/edit', [GuruController::class, 'edit'])->name('admin.guru.edit');
+            Route::post('/save/{id?}', [GuruController::class, 'save'])->name('admin.guru.save');
+            Route::get('/{id}', [GuruController::class, 'show'])->name('admin.guru.show');
+            Route::delete('/{id}', [GuruController::class, 'destroy'])->name('admin.guru.delete');
+        });
+
+        // 7. Kelola Siswa
+        Route::prefix('siswa')->group(function () {
+            Route::get('/', [SiswaController::class, 'index'])->name('admin.siswa.index');
+            // Route::get('/create', [SiswaController::class, 'create'])->name('admin.siswa.create');
+            // Route::get('/{id}/edit', [SiswaController::class, 'edit'])->name('admin.siswa.edit');
+            
+            Route::get('/add-edit/{id?}', [SiswaController::class, 'addEdit'])->name('admin.siswa.addEdit');
+            
+            
+            Route::post('/save/{id?}', [SiswaController::class, 'save'])->name('admin.siswa.save');
+            
+            Route::get('/{id}', [SiswaController::class, 'show'])->name('admin.siswa.show');
+            Route::delete('/{id}', [SiswaController::class, 'destroy'])->name('admin.siswa.delete');
+        });
+
+        // 8. Kelola User
+        Route::prefix('user')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
+            Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
+            Route::get('/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
+            Route::post('/save/{id?}', [UserController::class, 'save'])->name('admin.user.save');
+            Route::get('/{id}', [UserController::class, 'show'])->name('admin.user.show');
+            Route::delete('/{id}', [UserController::class, 'destroy'])->name('admin.user.delete');
+        });
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users');
     });
 });

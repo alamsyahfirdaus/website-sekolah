@@ -7,38 +7,20 @@ use Illuminate\Http\Request;
 
 class SiswaController extends Controller
 {
-    /**
-     * Menampilkan daftar semua siswa.
-     * Pencarian, sorting, dan pagination ditangani langsung oleh DataTables.
-     */
     public function index()
     {
         $siswa = Siswa::latest()->get();
 
         return view('admin.siswa.index', compact('siswa'));
     }
-
-    /**
-     * Menampilkan form untuk menambah siswa baru.
-     */
-    public function create()
+    
+    public function addEdit($id = null)
     {
-        return view('admin.siswa.form');
+        $siswa = Siswa::find($id);
+
+        return view('admin.siswa.form', $siswa ? compact('siswa') : []);
     }
 
-    /**
-     * Menampilkan form untuk mengedit siswa yang sudah ada.
-     */
-    public function edit($id)
-    {
-        $siswa = Siswa::findOrFail($id);
-
-        return view('admin.siswa.form', compact('siswa'));
-    }
-
-    /**
-     * Menyimpan data siswa (gabungan Tambah dan Ubah).
-     */
     public function save(Request $request, $id = null)
     {
         // 1. Validasi input

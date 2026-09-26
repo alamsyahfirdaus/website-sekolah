@@ -42,14 +42,15 @@
                     <li class="nav-item dropdown user-menu">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img src="{{ asset('img/user2-160x160.jpg') }}" class="user-image rounded-circle shadow" alt="User Image" />
-                            <span class="d-none d-md-inline fw-semibold">{{ Auth::user()->name ?? 'Administrator' }}</span>
+                            <span class="d-none d-md-inline fw-semibold">{{ Auth::user()->name ?? 'Administrator' }} ({{ Auth::user()->role ?? 'Admin' }})</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end shadow">
                             <li class="user-header text-bg-primary">
                                 <img src="{{ asset('img/user2-160x160.jpg') }}" class="rounded-circle shadow" alt="User Image" />
                                 <p>
                                     {{ Auth::user()->name ?? 'Administrator' }}
-                                    <small>{{ Auth::user()->email ?? 'admin@sekolah.sch.id' }}</small>
+                                    <span class="badge bg-warning text-dark d-inline-block mt-1">{{ Auth::user()->role ?? 'Admin' }}</span>
+                                    <small class="d-block mt-1">{{ Auth::user()->email ?? 'admin@sekolah.sch.id' }}</small>
                                 </p>
                             </li>
                             <li class="user-footer d-flex justify-content-between">
@@ -90,7 +91,8 @@
                             </a>
                         </li>
 
-                        <!-- 3. Kelola Guru -->
+                        <!-- 3. Kelola Guru (Hanya Admin) -->
+                        @if(Auth::check() && strcasecmp(Auth::user()->role, 'admin') === 0)
                         <li class="nav-item">
                             <a href="{{ route('admin.guru.index') }}" class="nav-link {{ request()->routeIs('admin.guru.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-person-badge"></i>
@@ -98,15 +100,16 @@
                             </a>
                         </li>
 
-                        <!-- 4. Kelola Siswa -->
+                        <!-- 4. Kelola Siswa (Hanya Admin) -->
                         <li class="nav-item">
                             <a href="{{ route('admin.siswa.index') }}" class="nav-link {{ request()->routeIs('admin.siswa.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-people-fill"></i>
                                 <p>Kelola Siswa</p>
                             </a>
                         </li>
+                        @endif
 
-                        <!-- 5. Kelola Berita -->
+                        <!-- 5. Kelola Berita (Admin & Operator) -->
                         <li class="nav-item">
                             <a href="{{ route('admin.berita.index') }}" class="nav-link {{ request()->routeIs('admin.berita.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-newspaper"></i>
@@ -114,7 +117,7 @@
                             </a>
                         </li>
 
-                        <!-- 6. Kelola Ekstrakurikuler -->
+                        <!-- 6. Kelola Ekstrakurikuler (Admin & Operator) -->
                         <li class="nav-item">
                             <a href="{{ route('admin.ekstrakurikuler.index') }}" class="nav-link {{ request()->routeIs('admin.ekstrakurikuler.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-trophy-fill"></i>
@@ -122,13 +125,23 @@
                             </a>
                         </li>
 
-                        <!-- 7. Kelola Galeri -->
+                        <!-- 7. Kelola Galeri (Admin & Operator) -->
                         <li class="nav-item">
                             <a href="{{ route('admin.galeri.index') }}" class="nav-link {{ request()->routeIs('admin.galeri.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-images"></i>
                                 <p>Kelola Galeri</p>
                             </a>
                         </li>
+
+                        <!-- 8. Kelola User (Hanya Admin) -->
+                        @if(Auth::check() && strcasecmp(Auth::user()->role, 'admin') === 0)
+                        <li class="nav-item">
+                            <a href="{{ route('admin.user.index') }}" class="nav-link {{ request()->routeIs('admin.user.*') || request()->routeIs('admin.users*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-person-gear"></i>
+                                <p>Kelola User</p>
+                            </a>
+                        </li>
+                        @endif
                     </ul>
                 </nav>
             </div>

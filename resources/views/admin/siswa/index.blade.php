@@ -6,7 +6,7 @@
 <div class="card card-outline card-primary shadow-sm mb-4">
     <div class="card-header d-flex align-items-center justify-content-between">
         <h5 class="card-title mb-0">Daftar Siswa Sekolah</h5>
-        <a href="{{ route('admin.siswa.create') }}" class="btn btn-primary btn-sm">
+        <a href="{{ route('admin.siswa.addEdit') }}" class="btn btn-primary btn-sm">
             <i class="bi bi-person-plus me-1"></i> Tambah Siswa
         </a>
     </div>
@@ -45,7 +45,7 @@
                             <a href="{{ route('admin.siswa.show', $item->id) }}" class="btn btn-info btn-sm text-white" title="Detail">
                                 <i class="bi bi-eye"></i> Detail
                             </a>
-                            <a href="{{ route('admin.siswa.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                            <a href="{{ route('admin.siswa.addEdit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
                             <form action="{{ route('admin.siswa.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">

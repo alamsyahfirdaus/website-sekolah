@@ -326,5 +326,99 @@ class AdminCrudTest extends TestCase
         $this->get(route('admin.ekstrakurikuler.index'))->assertRedirect(route('login'));
         $this->get(route('admin.galeri.index'))->assertRedirect(route('login'));
         $this->get(route('admin.profil-sekolah'))->assertRedirect(route('login'));
+        $this->get(route('admin.user.index'))->assertRedirect(route('login'));
+    }
+
+    /**
+     * 9. CRUD User (index, create form, save baru, show, edit form, save update, delete, proteksi hapus diri sendiri).
+     */
+    public function test_user_crud_operations()
+    {
+        // Index
+        $this->actingAs($this->admin)->get(route('admin.user.index'))->assertStatus(200);
+
+        // Form Tambah
+        $this->actingAs($this->admin)->get(route('admin.user.create'))->assertStatus(200);
+
+        // Save User Baru
+        $responseStore = $this->actingAs($this->admin)->post(route('admin.user.save'), [
+            'name'     => 'Staff Tata Usaha',
+            'username' => 'staf_tu',
+            'email'    => 'staf@sekolah.sch.id',
+            'role'     => 'Operator',
+            'password' => 'secret123',
+        ]);
+
+        $responseStore->assertRedirect(route('admin.user.index'));
+        $responseStore->assertSessionHas('success');
+
+        $user = User::where('email', 'staf@sekolah.sch.id')->first();
+        $this->assertNotNull($user);
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('secret123', $user->password));
+
+        // Detail
+        $this->actingAs($this->admin)->get(route('admin.user.show', $user->id))
+            ->assertStatus(200)
+            ->assertSee('Staff Tata Usaha');
+
+        // Form Edit
+        $this->actingAs($this->admin)->get(route('admin.user.edit', $user->id))->assertStatus(200);
+
+        // Save User Update (tanpa ganti password)
+        $oldPasswordHash = $user->password;
+        $responseUpdate = $this->actingAs($this->admin)->post(route('admin.user.save', $user->id), [
+            'name'     => 'Staff Tata Usaha Update',
+            'username' => 'staf_tu',
+            'email'    => 'staf@sekolah.sch.id',
+            'role'     => 'Operator',
+            'password' => '', // kosongkan, password lama tidak boleh berubah
+        ]);
+
+        $responseUpdate->assertRedirect(route('admin.user.index'));
+        $user->refresh();
+        $this->assertEquals('Staff Tata Usaha Update', $user->name);
+        $this->assertEquals($oldPasswordHash, $user->password);
+
+        // Proteksi: Admin tidak boleh menghapus akun dirinya sendiri yang sedang login
+        $responseSelfDelete = $this->actingAs($this->admin)->delete(route('admin.user.delete', $this->admin->id));
+        $responseSelfDelete->assertRedirect(route('admin.user.index'));
+        $responseSelfDelete->assertSessionHas('error');
+        $this->assertDatabaseHas('users', ['id' => $this->admin->id]);
+
+        // Hapus user yang baru dibuat
+        $responseDelete = $this->actingAs($this->admin)->delete(route('admin.user.delete', $user->id));
+        $responseDelete->assertRedirect(route('admin.user.index'));
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    }
+
+    /**
+     * 10. Pembatasan Hak Akses Berdasarkan Role (Admin vs Operator).
+     */
+    public function test_role_access_control()
+    {
+        $operator = User::where('role', 'Operator')->first();
+
+        // 1. Admin memiliki akses penuh (HTTP 200)
+        $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.profil-sekolah'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.guru.index'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.siswa.index'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.berita.index'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.ekstrakurikuler.index'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.galeri.index'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.user.index'))->assertStatus(200);
+
+        // 2. Operator BISA mengakses fitur operasional sekolah (HTTP 200)
+        $this->actingAs($operator)->get(route('admin.dashboard'))->assertStatus(200);
+        $this->actingAs($operator)->get(route('admin.profil-sekolah'))->assertStatus(200);
+        $this->actingAs($operator)->get(route('admin.berita.index'))->assertStatus(200);
+        $this->actingAs($operator)->get(route('admin.ekstrakurikuler.index'))->assertStatus(200);
+        $this->actingAs($operator)->get(route('admin.galeri.index'))->assertStatus(200);
+
+        // 3. Operator DITOLAK (HTTP 403) saat mencoba mengakses Guru, Siswa, dan User
+        $this->actingAs($operator)->get(route('admin.guru.index'))->assertStatus(403);
+        $this->actingAs($operator)->get(route('admin.siswa.index'))->assertStatus(403);
+        $this->actingAs($operator)->get(route('admin.user.index'))->assertStatus(403);
+        $this->actingAs($operator)->get('/admin/users')->assertStatus(403);
     }
 }

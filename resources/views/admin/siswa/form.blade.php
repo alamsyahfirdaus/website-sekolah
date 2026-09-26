@@ -18,6 +18,7 @@
             @else
                 <form action="{{ route('admin.siswa.save') }}" method="POST">
             @endif
+            
                 @csrf
 
                 <div class="card-body">
