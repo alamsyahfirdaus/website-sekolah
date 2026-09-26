@@ -6,13 +6,13 @@ use App\Models\Berita;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
 class BeritaController extends Controller
 {
     /**
-     * Menampilkan daftar berita sekolah.
-     * Fitur pencarian dan pagination ditangani oleh DataTables.
+     * Menampilkan daftar semua berita sekolah.
      */
     public function index()
     {
@@ -22,32 +22,51 @@ class BeritaController extends Controller
     }
 
     /**
-     * Menampilkan form untuk menulis berita baru.
+     * Menampilkan form tambah atau ubah berita.
      */
-    public function create()
+    public function addEdit($id = null)
     {
-        return view('admin.berita.form');
-    }
+        try {
+            $berita = $id
+                ? Berita::findOrFail(Crypt::decrypt($id))
+                : null;
 
-    /**
-     * Menampilkan form untuk mengedit berita.
-     */
-    public function edit($id)
-    {
-        $berita = Berita::findOrFail($id);
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.berita.index')
+                ->with('error', 'Data berita tidak ditemukan.');
+        }
 
         return view('admin.berita.form', compact('berita'));
     }
 
     /**
-     * Menyimpan data berita (gabungan Tambah dan Ubah).
+     * Menyimpan data baru atau perubahan berita.
      */
     public function save(Request $request, $id = null)
     {
-        // 1. Validasi input
+        // Jika ada ID, berarti sedang mengubah data.
+        if ($id) {
+            try {
+                $id = Crypt::decrypt($id);
+                $berita = Berita::findOrFail($id);
+
+            } catch (\Exception $e) {
+                return redirect()
+                    ->route('admin.berita.index')
+                    ->with('error', 'Data berita tidak ditemukan.');
+            }
+
+        } else {
+            // Jika tidak ada ID, berarti menambah berita baru.
+            $berita = new Berita();
+            $berita->id_user = Auth::id() ?? User::value('id');
+        }
+
+        // Validasi input
         $request->validate([
-            'judul'   => 'required|max:50',
-            'isi'     => 'required',
+            'judul'   => 'required|string|max:50',
+            'isi'     => 'required|string',
             'tanggal' => 'required|date',
             'gambar'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
@@ -59,20 +78,12 @@ class BeritaController extends Controller
             'gambar.max'       => 'Ukuran gambar maksimal 2MB.',
         ]);
 
-        // 2. Tentukan model (Tambah atau Ubah)
-        if ($id) {
-            $berita = Berita::findOrFail($id);
-        } else {
-            $berita = new Berita();
-            $berita->id_user = Auth::id() ?? User::value('id');
-        }
-
-        // 3. Masukkan data ke model
+        // Masukkan data ke model
         $berita->judul   = $request->judul;
         $berita->isi     = $request->isi;
         $berita->tanggal = $request->tanggal;
 
-        // 4. Upload gambar jika disertakan
+        // Upload gambar jika disertakan
         if ($request->hasFile('gambar')) {
             if ($berita->gambar && Storage::disk('public')->exists($berita->gambar)) {
                 Storage::disk('public')->delete($berita->gambar);
@@ -80,30 +91,49 @@ class BeritaController extends Controller
             $berita->gambar = $request->file('gambar')->store('berita', 'public');
         }
 
-        // 5. Simpan ke database
+        // Simpan ke database
         $berita->save();
 
         return redirect()
             ->route('admin.berita.index')
-            ->with('success', $id ? 'Berita berhasil diperbarui.' : 'Berita berhasil disimpan.');
+            ->with(
+                'success',
+                $id
+                    ? 'Data berita berhasil diperbarui.'
+                    : 'Data berita berhasil disimpan.'
+            );
     }
 
     /**
-     * Menampilkan detail isi berita.
+     * Menampilkan detail informasi berita.
      */
     public function show($id)
     {
-        $berita = Berita::with('user')->findOrFail($id);
+        try {
+            $berita = Berita::with('user')->findOrFail(Crypt::decrypt($id));
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.berita.index')
+                ->with('error', 'Data berita tidak ditemukan.');
+        }
 
         return view('admin.berita.show', compact('berita'));
     }
 
     /**
-     * Menghapus berita dan gambarnya dari database.
+     * Menghapus berita dan file gambarnya.
      */
     public function destroy($id)
     {
-        $berita = Berita::findOrFail($id);
+        try {
+            $berita = Berita::findOrFail(Crypt::decrypt($id));
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.berita.index')
+                ->with('error', 'Data berita tidak ditemukan.');
+        }
 
         if ($berita->gambar && Storage::disk('public')->exists($berita->gambar)) {
             Storage::disk('public')->delete($berita->gambar);
@@ -113,6 +143,6 @@ class BeritaController extends Controller
 
         return redirect()
             ->route('admin.berita.index')
-            ->with('success', 'Berita berhasil dihapus.');
+            ->with('success', 'Data berita berhasil dihapus.');
     }
 }

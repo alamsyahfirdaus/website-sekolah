@@ -4,20 +4,18 @@
 
 @section('content')
 <div class="row">
-    <div class="col-lg-10 offset-lg-1">
+    {{-- Form dibuat full width (col-12) agar leluasa dan rapi --}}
+    <div class="col-12">
         <div class="card {{ isset($berita) ? 'card-warning' : 'card-primary' }} card-outline shadow-sm mb-4">
+            {{-- Header card: judul form di sebelah kiri --}}
             <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="bi {{ isset($berita) ? 'bi-pencil-square' : 'bi-plus-circle' }} me-1"></i>
+                <h3 class="card-title mb-0">
+                    <i class="bi {{ isset($berita) ? 'bi-pencil-square' : 'bi-plus-lg' }} me-1"></i>
                     {{ isset($berita) ? 'Form Edit Berita' : 'Form Tulis Berita Baru' }}
-                </h5>
+                </h3>
             </div>
 
-            @if(isset($berita))
-                <form action="{{ route('admin.berita.save', $berita->id) }}" method="POST" enctype="multipart/form-data">
-            @else
-                <form action="{{ route('admin.berita.save') }}" method="POST" enctype="multipart/form-data">
-            @endif
+            <form action="{{ route('admin.berita.save', isset($berita) ? Crypt::encrypt($berita->id) : null) }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="card-body">
@@ -68,13 +66,16 @@
                     </div>
                 </div>
 
-                <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('admin.berita.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Kembali
-                    </a>
-                    <button type="submit" class="btn {{ isset($berita) ? 'btn-warning' : 'btn-primary' }}">
-                        <i class="bi bi-save me-1"></i> {{ isset($berita) ? 'Simpan Perubahan' : 'Publikasikan Berita' }}
-                    </button>
+                {{-- Footer card: tombol kembali di kiri, tombol simpan di kanan --}}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ route('admin.berita.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        </a>
+                        <button type="submit" class="btn {{ isset($berita) ? 'btn-warning' : 'btn-primary' }}">
+                            <i class="bi bi-save me-1"></i> {{ isset($berita) ? 'Simpan Perubahan' : 'Publikasikan Berita' }}
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

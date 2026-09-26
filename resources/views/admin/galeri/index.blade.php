@@ -4,23 +4,29 @@
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="card-title mb-0">Daftar Dokumentasi Galeri Sekolah</h5>
-        <a href="{{ route('admin.galeri.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-circle me-1"></i> Tambah Galeri
-        </a>
+    {{-- Header card: judul di kiri, tombol tambah di kanan --}}
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h3 class="card-title mb-0">
+                Daftar Dokumentasi Galeri
+            </h3>
+
+            <a href="{{ route('admin.galeri.addEdit') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Galeri
+            </a>
+        </div>
     </div>
 
     <div class="card-body">
-        <table id="tableGaleri" class="table table-bordered table-striped table-hover align-middle">
+        <table id="tableGaleri" class="table table-bordered table-striped table-hover align-middle responsive nowrap" width="100%">
             <thead class="table-light">
                 <tr>
-                    <th style="width: 50px;" class="text-center">No</th>
-                    <th style="width: 90px;" class="text-center">Media</th>
-                    <th>Judul Dokumentasi</th>
-                    <th style="width: 110px;" class="text-center">Kategori</th>
-                    <th style="width: 130px;">Tanggal</th>
-                    <th style="width: 200px;" class="text-center">Aksi</th>
+                    <th class="text-center" data-priority="1" style="width: 40px;">No</th>
+                    <th class="text-center" data-priority="2" style="width: 75px;">Media</th>
+                    <th data-priority="1">Judul Dokumentasi</th>
+                    <th class="text-center" data-priority="3" style="width: 100px;">Kategori</th>
+                    <th data-priority="4" style="width: 120px;">Tanggal</th>
+                    <th class="text-center" data-priority="1" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,13 +35,13 @@
                         <td class="text-center">{{ $loop->iteration }}</td>
                         <td class="text-center">
                             @if ($item->kategori == 'Video')
-                                <div class="bg-dark text-white rounded d-inline-flex align-items-center justify-content-center" style="width: 65px; height: 45px;">
+                                <div class="bg-dark text-white rounded d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 42px;">
                                     <i class="bi bi-play-circle-fill fs-5 text-danger"></i>
                                 </div>
                             @elseif ($item->file && file_exists(public_path('storage/' . $item->file)))
-                                <img src="{{ asset('storage/' . $item->file) }}" alt="{{ $item->judul }}" class="rounded shadow-sm" style="width: 65px; height: 45px; object-fit: cover;">
+                                <img src="{{ asset('storage/' . $item->file) }}" alt="{{ $item->judul }}" class="rounded shadow-sm" style="width: 60px; height: 42px; object-fit: cover;">
                             @else
-                                <div class="bg-secondary-subtle rounded d-inline-flex align-items-center justify-content-center text-secondary" style="width: 65px; height: 45px;">
+                                <div class="bg-secondary-subtle rounded d-inline-flex align-items-center justify-content-center text-secondary" style="width: 60px; height: 42px;">
                                     <i class="bi bi-image fs-5"></i>
                                 </div>
                             @endif
@@ -43,7 +49,7 @@
                         <td>
                             <div class="fw-semibold">{{ $item->judul }}</div>
                             @if ($item->keterangan)
-                                <small class="text-muted">{{ Str::limit($item->keterangan, 60) }}</small>
+                                <small class="text-muted d-none d-lg-block">{{ Str::limit($item->keterangan, 60) }}</small>
                             @endif
                         </td>
                         <td class="text-center">
@@ -57,19 +63,21 @@
                             </span>
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.galeri.show', $item->id) }}" class="btn btn-info btn-sm text-white" title="Detail">
-                                <i class="bi bi-eye"></i> Detail
-                            </a>
-                            <a href="{{ route('admin.galeri.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
-                                <i class="bi bi-pencil-square"></i> Edit
-                            </a>
-                            <form action="{{ route('admin.galeri.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus galeri ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
-                                    <i class="bi bi-trash"></i> Hapus
-                                </button>
-                            </form>
+                            <div class="btn-aksi-group" role="group">
+                                <a href="{{ route('admin.galeri.show', Crypt::encrypt($item->id)) }}" class="btn btn-info btn-sm text-white" title="Detail Galeri" aria-label="Detail">
+                                    <i class="bi bi-eye"></i> <span class="d-none d-md-inline ms-1">Detail</span>
+                                </a>
+                                <a href="{{ route('admin.galeri.addEdit', Crypt::encrypt($item->id)) }}" class="btn btn-warning btn-sm" title="Edit Galeri" aria-label="Edit">
+                                    <i class="bi bi-pencil-square"></i> <span class="d-none d-md-inline ms-1">Edit</span>
+                                </a>
+                                <form action="{{ route('admin.galeri.delete', Crypt::encrypt($item->id)) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus galeri ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus Galeri" aria-label="Hapus">
+                                        <i class="bi bi-trash"></i> <span class="d-none d-md-inline ms-1">Hapus</span>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -83,6 +91,8 @@
 <script>
     $(document).ready(function () {
         $('#tableGaleri').DataTable({
+            responsive: true,
+            autoWidth: false,
             language: {
                 search: "Cari Data:",
                 lengthMenu: "Tampilkan _MENU_ baris",

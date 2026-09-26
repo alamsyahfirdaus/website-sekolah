@@ -4,48 +4,63 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     /**
-     * Menampilkan daftar semua pengguna (Admin & Operator).
-     * DataTables menangani pencarian, pengurutan, dan pagination.
+     * Menampilkan daftar semua pengguna sistem.
      */
     public function index()
     {
-        // Ambil semua data user terbaru tanpa filter search manual di controller
         $users = User::latest()->get();
 
         return view('admin.user.index', compact('users'));
     }
 
     /**
-     * Menampilkan form untuk menambah pengguna baru.
+     * Menampilkan form tambah atau ubah data pengguna.
      */
-    public function create()
+    public function addEdit($id = null)
     {
-        return view('admin.user.form');
-    }
+        try {
+            $user = $id
+                ? User::findOrFail(Crypt::decrypt($id))
+                : null;
 
-    /**
-     * Menampilkan form untuk mengedit pengguna yang sudah ada.
-     */
-    public function edit($id)
-    {
-        $user = User::findOrFail($id);
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.user.index')
+                ->with('error', 'Data pengguna tidak ditemukan.');
+        }
 
         return view('admin.user.form', compact('user'));
     }
 
     /**
-     * Menyimpan data pengguna (gabungan Tambah dan Ubah).
-     * Jika $id ada -> Ubah (Edit)
-     * Jika $id kosong -> Tambah Baru
+     * Menyimpan data baru atau perubahan pengguna.
      */
     public function save(Request $request, $id = null)
     {
-        // 1. Validasi input
+        // Jika ada ID, berarti sedang mengubah data.
+        if ($id) {
+            try {
+                $id = Crypt::decrypt($id);
+                $user = User::findOrFail($id);
+
+            } catch (\Exception $e) {
+                return redirect()
+                    ->route('admin.user.index')
+                    ->with('error', 'Data pengguna tidak ditemukan.');
+            }
+
+        } else {
+            // Jika tidak ada ID, berarti menambah pengguna baru.
+            $user = new User();
+        }
+
+        // Validasi input
         $request->validate([
             'name'     => 'required|string|max:50',
             'username' => 'nullable|string|max:30|unique:users,username,' . ($id ?? 'NULL') . ',id',
@@ -64,23 +79,15 @@ class UserController extends Controller
             'password.min'      => 'Password minimal terdiri dari 6 karakter.',
         ]);
 
-        // 2. Tentukan model (Tambah atau Ubah)
-        if ($id) {
-            $user = User::findOrFail($id);
-        } else {
-            $user = new User();
-        }
-
-        // 3. Masukkan data ke model
+        // Masukkan data ke model
         $user->name  = $request->name;
         $user->email = $request->email;
-        $user->role  = ucfirst(strtolower($request->role)); // Disimpan rapi: 'Admin' atau 'Operator'
+        $user->role  = ucfirst(strtolower($request->role));
 
-        // 4. Pengaturan username: jika diisi gunakan input, jika kosong buat dari email
+        // Pengaturan username jika belum ada
         if ($request->filled('username')) {
             $user->username = $request->username;
         } elseif (!$id) {
-            // Otomatis buat username dari bagian depan email jika belum ada
             $baseUsername = strtolower(explode('@', $request->email)[0]);
             $username = $baseUsername;
             $counter = 1;
@@ -91,17 +98,22 @@ class UserController extends Controller
             $user->username = $username;
         }
 
-        // 5. Password: hanya diubah jika diisi oleh pengguna
+        // Password hanya di-hash jika diisi
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
-        // 6. Simpan ke database
+        // Simpan ke database
         $user->save();
 
         return redirect()
             ->route('admin.user.index')
-            ->with('success', $id ? 'Data pengguna berhasil diperbarui.' : 'Data pengguna berhasil ditambahkan.');
+            ->with(
+                'success',
+                $id
+                    ? 'Data pengguna berhasil diperbarui.'
+                    : 'Data pengguna berhasil disimpan.'
+            );
     }
 
     /**
@@ -109,18 +121,31 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $user = User::findOrFail(Crypt::decrypt($id));
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.user.index')
+                ->with('error', 'Data pengguna tidak ditemukan.');
+        }
 
         return view('admin.user.show', compact('user'));
     }
 
     /**
      * Menghapus pengguna dari database.
-     * Mencegah admin menghapus akun dirinya sendiri yang sedang login.
      */
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $user = User::findOrFail(Crypt::decrypt($id));
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.user.index')
+                ->with('error', 'Data pengguna tidak ditemukan.');
+        }
 
         // Proteksi: jangan izinkan menghapus diri sendiri
         if ($user->id == auth()->id()) {

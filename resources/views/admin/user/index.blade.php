@@ -4,22 +4,28 @@
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="card-title mb-0">Daftar Pengguna Sistem</h5>
-        <a href="{{ route('admin.user.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-person-plus me-1"></i> Tambah User
-        </a>
+    {{-- Header card: judul di kiri, tombol tambah di kanan --}}
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h3 class="card-title mb-0">
+                Daftar User
+            </h3>
+
+            <a href="{{ route('admin.user.addEdit') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Tambah User
+            </a>
+        </div>
     </div>
 
     <div class="card-body">
-        <table id="tableUser" class="table table-bordered table-striped table-hover align-middle">
+        <table id="tableUser" class="table table-bordered table-striped table-hover align-middle responsive nowrap" width="100%">
             <thead class="table-light">
                 <tr>
-                    <th style="width: 50px;" class="text-center">No</th>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th style="width: 130px;" class="text-center">Role</th>
-                    <th style="width: 200px;" class="text-center">Aksi</th>
+                    <th class="text-center" data-priority="1" style="width: 40px;">No</th>
+                    <th data-priority="1">Nama</th>
+                    <th data-priority="3">Email</th>
+                    <th class="text-center" data-priority="2" style="width: 120px;">Role</th>
+                    <th class="text-center" data-priority="1" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,25 +49,27 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.user.show', $item->id) }}" class="btn btn-info btn-sm text-white" title="Detail">
-                                <i class="bi bi-eye"></i> Detail
-                            </a>
-                            <a href="{{ route('admin.user.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
-                                <i class="bi bi-pencil-square"></i> Edit
-                            </a>
-                            @if ($item->id !== auth()->id())
-                                <form action="{{ route('admin.user.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
-                                        <i class="bi bi-trash"></i> Hapus
+                            <div class="btn-aksi-group" role="group">
+                                <a href="{{ route('admin.user.show', Crypt::encrypt($item->id)) }}" class="btn btn-info btn-sm text-white" title="Detail User" aria-label="Detail">
+                                    <i class="bi bi-eye"></i> <span class="d-none d-md-inline ms-1">Detail</span>
+                                </a>
+                                <a href="{{ route('admin.user.addEdit', Crypt::encrypt($item->id)) }}" class="btn btn-warning btn-sm" title="Edit User" aria-label="Edit">
+                                    <i class="bi bi-pencil-square"></i> <span class="d-none d-md-inline ms-1">Edit</span>
+                                </a>
+                                @if ($item->id !== auth()->id())
+                                    <form action="{{ route('admin.user.delete', Crypt::encrypt($item->id)) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus User" aria-label="Hapus">
+                                            <i class="bi bi-trash"></i> <span class="d-none d-md-inline ms-1">Hapus</span>
+                                        </button>
+                                    </form>
+                                @else
+                                    <button class="btn btn-secondary btn-sm" disabled title="Akun yang sedang login tidak dapat dihapus" aria-label="Terkunci">
+                                        <i class="bi bi-lock"></i>
                                     </button>
-                                </form>
-                            @else
-                                <button class="btn btn-secondary btn-sm" disabled title="Akun yang sedang login tidak dapat dihapus">
-                                    <i class="bi bi-lock"></i>
-                                </button>
-                            @endif
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -75,6 +83,8 @@
 <script>
     $(document).ready(function () {
         $('#tableUser').DataTable({
+            responsive: true,
+            autoWidth: false,
             language: {
                 search: "Cari Data:",
                 lengthMenu: "Tampilkan _MENU_ baris",

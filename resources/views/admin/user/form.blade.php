@@ -4,20 +4,18 @@
 
 @section('content')
 <div class="row">
-    <div class="col-lg-8 offset-lg-2">
+    {{-- Form dibuat full width (col-12) agar leluasa dan rapi --}}
+    <div class="col-12">
         <div class="card {{ isset($user) ? 'card-warning' : 'card-primary' }} card-outline shadow-sm mb-4">
+            {{-- Header card: judul form di sebelah kiri --}}
             <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="bi {{ isset($user) ? 'bi-pencil-square' : 'bi-person-plus' }} me-1"></i>
+                <h3 class="card-title mb-0">
+                    <i class="bi {{ isset($user) ? 'bi-pencil-square' : 'bi-plus-lg' }} me-1"></i>
                     {{ isset($user) ? 'Form Edit Data User' : 'Form Tambah User Baru' }}
-                </h5>
+                </h3>
             </div>
 
-            @if(isset($user))
-                <form action="{{ route('admin.user.save', $user->id) }}" method="POST">
-            @else
-                <form action="{{ route('admin.user.save') }}" method="POST">
-            @endif
+            <form action="{{ route('admin.user.save', isset($user) ? Crypt::encrypt($user->id) : null) }}" method="POST">
                 @csrf
 
                 <div class="card-body">
@@ -83,13 +81,16 @@
                     </div>
                 </div>
 
-                <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('admin.user.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Kembali
-                    </a>
-                    <button type="submit" class="btn {{ isset($user) ? 'btn-warning' : 'btn-primary' }}">
-                        <i class="bi bi-save me-1"></i> {{ isset($user) ? 'Simpan Perubahan' : 'Simpan Data User' }}
-                    </button>
+                {{-- Footer card: tombol kembali di kiri, tombol simpan di kanan --}}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ route('admin.user.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        </a>
+                        <button type="submit" class="btn {{ isset($user) ? 'btn-warning' : 'btn-primary' }}">
+                            <i class="bi bi-save me-1"></i> {{ isset($user) ? 'Simpan Perubahan' : 'Simpan Data User' }}
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

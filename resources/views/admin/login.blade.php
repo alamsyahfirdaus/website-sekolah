@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>SMA INSTRUKTUR | Login</title>
+    <title>{{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }} | Login</title>
 
     <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
     <script>
@@ -94,9 +94,17 @@
 
 <body class="login-page bg-body-secondary">
     <main class="login-box">
-        <h1 class="login-logo">
-            <a href="{{ url('/') }}">SMA INSTRUKTUR</a>
-        </h1>
+        <div class="login-logo mb-3 text-center">
+            <a href="{{ url('/') }}" class="text-decoration-none text-dark">
+                {{-- Logo sekolah dari database Profil Sekolah --}}
+                @if (!empty($profilSekolah->logo) && file_exists(public_path('storage/' . $profilSekolah->logo)))
+                    <img src="{{ asset('storage/' . $profilSekolah->logo) }}" alt="{{ $profilSekolah->nama_sekolah ?? 'Logo' }}" class="mb-2 d-block mx-auto" style="max-height: 70px; object-fit: contain;">
+                @else
+                    <img src="{{ asset('img/smk-ypc.png') }}" alt="{{ $profilSekolah->nama_sekolah ?? 'Logo' }}" class="mb-2 d-block mx-auto" style="max-height: 70px; object-fit: contain;">
+                @endif
+                <h3 class="fw-bold mb-0 text-dark">{{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }}</h3>
+            </a>
+        </div>
         <!-- /.login-logo -->
         <div class="card">
             <div class="card-body login-card-body">

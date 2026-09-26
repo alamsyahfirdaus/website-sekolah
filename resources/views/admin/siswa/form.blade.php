@@ -4,17 +4,18 @@
 
 @section('content')
 <div class="row">
-    <div class="col-lg-8 offset-lg-2">
+    {{-- Form dibuat full width (col-12) agar leluasa dan rapi --}}
+    <div class="col-12">
         <div class="card {{ isset($siswa) ? 'card-warning' : 'card-primary' }} card-outline shadow-sm mb-4">
+            {{-- Header card: judul form di sebelah kiri --}}
             <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="bi {{ isset($siswa) ? 'bi-pencil-square' : 'bi-person-plus' }} me-1"></i>
+                <h3 class="card-title mb-0">
+                    <i class="bi {{ isset($siswa) ? 'bi-pencil-square' : 'bi-plus-lg' }} me-1"></i>
                     {{ isset($siswa) ? 'Form Edit Data Siswa' : 'Form Tambah Data Siswa Baru' }}
-                </h5>
+                </h3>
             </div>
 
-            
-            <form action="{{ route('admin.siswa.save', isset($siswa) ? $siswa->id : null) }}" method="POST">
+            <form action="{{ route('admin.siswa.save', isset($siswa) ? Crypt::encrypt($siswa->id) : null) }}" method="POST">
                 @csrf
 
                 <div class="card-body">
@@ -68,13 +69,16 @@
                     </div>
                 </div>
 
-                <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Kembali
-                    </a>
-                    <button type="submit" class="btn {{ isset($siswa) ? 'btn-warning' : 'btn-primary' }}">
-                        <i class="bi bi-save me-1"></i> {{ isset($siswa) ? 'Simpan Perubahan' : 'Simpan Data Siswa' }}
-                    </button>
+                {{-- Footer card: tombol kembali di kiri, tombol simpan di kanan --}}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        </a>
+                        <button type="submit" class="btn {{ isset($siswa) ? 'btn-warning' : 'btn-primary' }}">
+                            <i class="bi bi-save me-1"></i> {{ isset($siswa) ? 'Simpan Perubahan' : 'Simpan Data Siswa' }}
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

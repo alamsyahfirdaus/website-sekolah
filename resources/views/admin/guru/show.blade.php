@@ -4,13 +4,17 @@
 
 @section('content')
 <div class="row">
-    <div class="col-lg-8 offset-lg-2">
+    <div class="col-12">
         <div class="card card-outline card-info shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0"><i class="bi bi-person-lines-fill me-1"></i> Detail Guru</h5>
-                <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i> Kembali
-                </a>
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-person-lines-fill me-1"></i> Detail Guru
+                    </h3>
+                    <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali
+                    </a>
+                </div>
             </div>
 
             <div class="card-body">
@@ -29,7 +33,7 @@
                 <table class="table table-bordered table-striped">
                     <tbody>
                         <tr>
-                            <th style="width: 35%;" class="bg-body-tertiary">NIP</th>
+                            <th style="width: 30%;" class="bg-body-tertiary">NIP</th>
                             <td>{{ $guru->nip ?? '-' }}</td>
                         </tr>
                         <tr>
@@ -58,10 +62,15 @@
                 </table>
             </div>
 
-            <div class="card-footer d-flex justify-content-end gap-2">
-                <a href="{{ route('admin.guru.edit', $guru->id) }}" class="btn btn-warning">
-                    <i class="bi bi-pencil-square me-1"></i> Edit Data Guru
-                </a>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali
+                    </a>
+                    <a href="{{ route('admin.guru.addEdit', Crypt::encrypt($guru->id)) }}" class="btn btn-warning">
+                        <i class="bi bi-pencil-square me-1"></i> Edit Data Guru
+                    </a>
+                </div>
             </div>
         </div>
     </div>

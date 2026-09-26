@@ -17,7 +17,7 @@
                 @else
                     <img src="{{ asset('img/smk-ypc.png') }}" alt="Logo" style="height: 36px;">
                 @endif
-                {{ $profilSekolah->nama_sekolah ?? 'SMA INSTRUKTUR' }}
+                {{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }}
             </a>
             <div class="ms-auto">
                 @auth
@@ -36,7 +36,7 @@
     <!-- Hero Section -->
     <div class="py-5 bg-white border-bottom shadow-sm text-center">
         <div class="container py-4">
-            <h1 class="display-5 fw-bold text-dark mb-3">{{ $profilSekolah->nama_sekolah ?? 'SMA INSTRUKTUR' }}</h1>
+            <h1 class="display-5 fw-bold text-dark mb-3">{{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }}</h1>
             <p class="lead text-muted col-lg-8 mx-auto mb-4">
                 {{ $profilSekolah->deskripsi ?? 'Selamat datang di portal informasi resmi sekolah.' }}
             </p>

@@ -19,7 +19,7 @@ class ProfilSekolahController extends Controller
         // Jika belum ada data profil di database, buat data awal default
         if (!$profilSekolah) {
             $profilSekolah = ProfilSekolah::create([
-                'nama_sekolah'   => 'SMA INSTRUKTUR',
+                'nama_sekolah'   => 'Nama Sekolah',
                 'kepala_sekolah' => 'Kepala Sekolah',
                 'npsn'           => '12345678',
                 'alamat'         => 'Jl. Pendidikan No. 1',

@@ -4,20 +4,18 @@
 
 @section('content')
 <div class="row">
-    <div class="col-lg-8 offset-lg-2">
+    {{-- Form dibuat full width (col-12) agar leluasa dan rapi --}}
+    <div class="col-12">
         <div class="card {{ isset($guru) ? 'card-warning' : 'card-primary' }} card-outline shadow-sm mb-4">
+            {{-- Header card: judul form di sebelah kiri --}}
             <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="bi {{ isset($guru) ? 'bi-pencil-square' : 'bi-plus-circle' }} me-1"></i>
+                <h3 class="card-title mb-0">
+                    <i class="bi {{ isset($guru) ? 'bi-pencil-square' : 'bi-plus-lg' }} me-1"></i>
                     {{ isset($guru) ? 'Form Edit Data Guru' : 'Form Tambah Data Guru Baru' }}
-                </h5>
+                </h3>
             </div>
 
-            @if(isset($guru))
-                <form action="{{ route('admin.guru.save', $guru->id) }}" method="POST" enctype="multipart/form-data">
-            @else
-                <form action="{{ route('admin.guru.save') }}" method="POST" enctype="multipart/form-data">
-            @endif
+            <form action="{{ route('admin.guru.save', isset($guru) ? Crypt::encrypt($guru->id) : null) }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="card-body">
@@ -66,13 +64,16 @@
                     </div>
                 </div>
 
-                <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Kembali
-                    </a>
-                    <button type="submit" class="btn {{ isset($guru) ? 'btn-warning' : 'btn-primary' }}">
-                        <i class="bi bi-save me-1"></i> {{ isset($guru) ? 'Simpan Perubahan' : 'Simpan Data Guru' }}
-                    </button>
+                {{-- Footer card: tombol kembali di kiri, tombol simpan di kanan --}}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        </a>
+                        <button type="submit" class="btn {{ isset($guru) ? 'btn-warning' : 'btn-primary' }}">
+                            <i class="bi bi-save me-1"></i> {{ isset($guru) ? 'Simpan Perubahan' : 'Simpan Data Guru' }}
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
