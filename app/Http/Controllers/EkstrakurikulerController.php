@@ -10,33 +10,14 @@ use Illuminate\Support\Facades\Storage;
 class EkstrakurikulerController extends Controller
 {
     /**
-     * Menampilkan daftar ekstrakurikuler beserta data guru pembinanya.
+     * Menampilkan daftar ekstrakurikuler sekolah.
+     * Pencarian dan pagination ditangani oleh DataTables di sisi client.
      */
-    public function index(Request $request)
+    public function index()
     {
-        // 1. Inisialisasi query dengan eager loading relasi guru
-        $query = Ekstrakurikuler::with('guru');
+        $ekstrakurikuler = Ekstrakurikuler::with('guru')->latest()->get();
 
-        // 2. Pencarian berdasarkan nama ekskul, jadwal, atau nama pembina
-        if ($request->filled('search')) {
-            $keyword = $request->search;
-            $query->where(function ($q) use ($keyword) {
-                $q->where('nama_ekskul', 'like', "%{$keyword}%")
-                  ->orWhere('jadwal_latihan', 'like', "%{$keyword}%")
-                  ->orWhereHas('guru', function ($guruQuery) use ($keyword) {
-                      $guruQuery->where('nama_guru', 'like', "%{$keyword}%");
-                  });
-            });
-        }
-
-        // 3. Ambil data dengan pagination
-        $ekskuls = $query->latest()->paginate(10)->withQueryString();
-
-        return view('admin.ekstrakurikuler.index', [
-            'title'   => 'Kelola Ekstrakurikuler',
-            'ekskuls' => $ekskuls,
-            'search'  => $request->search,
-        ]);
+        return view('admin.ekstrakurikuler.index', compact('ekstrakurikuler'));
     }
 
     /**
@@ -44,59 +25,9 @@ class EkstrakurikulerController extends Controller
      */
     public function create()
     {
-        // Ambil daftar guru untuk pilihan pembina
-        $gurus = Guru::orderBy('nama_guru', 'asc')->get();
+        $guru = Guru::orderBy('nama_guru', 'asc')->get();
 
-        return view('admin.ekstrakurikuler.create', [
-            'title' => 'Tambah Ekstrakurikuler',
-            'gurus' => $gurus,
-        ]);
-    }
-
-    /**
-     * Menyimpan data ekstrakurikuler baru ke database.
-     */
-    public function store(Request $request)
-    {
-        // 1. Validasi input
-        $validated = $request->validate([
-            'nama_ekskul'    => 'required|string|max:40',
-            'id_guru'        => 'required|exists:guru,id',
-            'jadwal_latihan' => 'required|string|max:40',
-            'deskripsi'      => 'nullable|string',
-            'gambar'         => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ], [
-            'nama_ekskul.required'    => 'Nama ekstrakurikuler wajib diisi.',
-            'id_guru.required'        => 'Pilih guru pembina.',
-            'id_guru.exists'          => 'Guru pembina yang dipilih tidak valid.',
-            'jadwal_latihan.required' => 'Jadwal latihan wajib diisi.',
-            'gambar.image'            => 'File gambar harus berupa file gambar (JPG, JPEG, PNG).',
-            'gambar.max'              => 'Ukuran gambar maksimal 2MB.',
-        ]);
-
-        // 2. Upload gambar jika ada
-        if ($request->hasFile('gambar')) {
-            $validated['gambar'] = $request->file('gambar')->store('ekstrakurikuler', 'public');
-        }
-
-        // 3. Simpan ke database
-        Ekstrakurikuler::create($validated);
-
-        // 4. Redirect dengan pesan sukses
-        return redirect()->route('admin.ekstrakurikuler')->with('success', 'Data ekstrakurikuler berhasil ditambahkan.');
-    }
-
-    /**
-     * Menampilkan detail informasi satu ekstrakurikuler.
-     */
-    public function show($id)
-    {
-        $ekskul = Ekstrakurikuler::with('guru')->findOrFail($id);
-
-        return view('admin.ekstrakurikuler.show', [
-            'title'  => 'Detail Ekstrakurikuler',
-            'ekskul' => $ekskul,
-        ]);
+        return view('admin.ekstrakurikuler.form', compact('guru'));
     }
 
     /**
@@ -104,69 +35,89 @@ class EkstrakurikulerController extends Controller
      */
     public function edit($id)
     {
-        $ekskul = Ekstrakurikuler::findOrFail($id);
-        $gurus = Guru::orderBy('nama_guru', 'asc')->get();
+        $ekstrakurikuler = Ekstrakurikuler::findOrFail($id);
+        $guru = Guru::orderBy('nama_guru', 'asc')->get();
 
-        return view('admin.ekstrakurikuler.edit', [
-            'title'  => 'Edit Ekstrakurikuler',
-            'ekskul' => $ekskul,
-            'gurus'  => $gurus,
-        ]);
+        return view('admin.ekstrakurikuler.form', compact('ekstrakurikuler', 'guru'));
     }
 
     /**
-     * Memperbarui data ekstrakurikuler di database.
+     * Menyimpan data ekstrakurikuler (gabungan Tambah dan Ubah).
      */
-    public function update(Request $request, $id)
+    public function save(Request $request, $id = null)
     {
-        $ekskul = Ekstrakurikuler::findOrFail($id);
-
         // 1. Validasi input
-        $validated = $request->validate([
-            'nama_ekskul'    => 'required|string|max:40',
+        $request->validate([
+            'nama_ekskul'    => 'required|max:40',
             'id_guru'        => 'required|exists:guru,id',
-            'jadwal_latihan' => 'required|string|max:40',
-            'deskripsi'      => 'nullable|string',
+            'jadwal_latihan' => 'required|max:40',
+            'deskripsi'      => 'nullable',
             'gambar'         => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'nama_ekskul.required'    => 'Nama ekstrakurikuler wajib diisi.',
-            'id_guru.required'        => 'Pilih guru pembina.',
-            'id_guru.exists'          => 'Guru pembina yang dipilih tidak valid.',
+            'nama_ekskul.max'         => 'Nama ekstrakurikuler maksimal 40 karakter.',
+            'id_guru.required'        => 'Guru pembina wajib dipilih.',
+            'id_guru.exists'          => 'Guru pembina yang dipilih tidak terdaftar.',
             'jadwal_latihan.required' => 'Jadwal latihan wajib diisi.',
-            'gambar.image'            => 'File gambar harus berupa file gambar (JPG, JPEG, PNG).',
+            'jadwal_latihan.max'      => 'Jadwal latihan maksimal 40 karakter.',
+            'gambar.image'            => 'File harus berupa gambar (JPG, PNG).',
             'gambar.max'              => 'Ukuran gambar maksimal 2MB.',
         ]);
 
-        // 2. Jika ada unggahan gambar baru, hapus gambar lama dan simpan yang baru
-        if ($request->hasFile('gambar')) {
-            if ($ekskul->gambar && Storage::disk('public')->exists($ekskul->gambar)) {
-                Storage::disk('public')->delete($ekskul->gambar);
-            }
-            $validated['gambar'] = $request->file('gambar')->store('ekstrakurikuler', 'public');
+        // 2. Tentukan model (Tambah atau Ubah)
+        if ($id) {
+            $ekstrakurikuler = Ekstrakurikuler::findOrFail($id);
+        } else {
+            $ekstrakurikuler = new Ekstrakurikuler();
         }
 
-        // 3. Update database
-        $ekskul->update($validated);
+        // 3. Masukkan data ke model
+        $ekstrakurikuler->nama_ekskul    = $request->nama_ekskul;
+        $ekstrakurikuler->id_guru        = $request->id_guru;
+        $ekstrakurikuler->jadwal_latihan = $request->jadwal_latihan;
+        $ekstrakurikuler->deskripsi      = $request->deskripsi;
 
-        // 4. Redirect kembali dengan notifikasi sukses
-        return redirect()->route('admin.ekstrakurikuler')->with('success', 'Data ekstrakurikuler berhasil diperbarui.');
+        // 4. Upload gambar jika disertakan
+        if ($request->hasFile('gambar')) {
+            if ($ekstrakurikuler->gambar && Storage::disk('public')->exists($ekstrakurikuler->gambar)) {
+                Storage::disk('public')->delete($ekstrakurikuler->gambar);
+            }
+            $ekstrakurikuler->gambar = $request->file('gambar')->store('ekstrakurikuler', 'public');
+        }
+
+        // 5. Simpan ke database
+        $ekstrakurikuler->save();
+
+        return redirect()
+            ->route('admin.ekstrakurikuler.index')
+            ->with('success', $id ? 'Data ekstrakurikuler berhasil diperbarui.' : 'Data ekstrakurikuler berhasil ditambahkan.');
     }
 
     /**
-     * Menghapus ekstrakurikuler beserta gambarnya.
+     * Menampilkan detail informasi satu ekstrakurikuler.
+     */
+    public function show($id)
+    {
+        $ekstrakurikuler = Ekstrakurikuler::with('guru')->findOrFail($id);
+
+        return view('admin.ekstrakurikuler.show', compact('ekstrakurikuler'));
+    }
+
+    /**
+     * Menghapus data ekstrakurikuler dan file gambarnya.
      */
     public function destroy($id)
     {
-        $ekskul = Ekstrakurikuler::findOrFail($id);
+        $ekstrakurikuler = Ekstrakurikuler::findOrFail($id);
 
-        // Hapus file gambar dari storage jika ada
-        if ($ekskul->gambar && Storage::disk('public')->exists($ekskul->gambar)) {
-            Storage::disk('public')->delete($ekskul->gambar);
+        if ($ekstrakurikuler->gambar && Storage::disk('public')->exists($ekstrakurikuler->gambar)) {
+            Storage::disk('public')->delete($ekstrakurikuler->gambar);
         }
 
-        // Hapus data dari database
-        $ekskul->delete();
+        $ekstrakurikuler->delete();
 
-        return redirect()->route('admin.ekstrakurikuler')->with('success', 'Data ekstrakurikuler berhasil dihapus.');
+        return redirect()
+            ->route('admin.ekstrakurikuler.index')
+            ->with('success', 'Data ekstrakurikuler berhasil dihapus.');
     }
 }

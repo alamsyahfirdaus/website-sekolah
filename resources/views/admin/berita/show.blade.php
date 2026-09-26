@@ -1,6 +1,6 @@
-@extends('app')
+@extends('layouts.app')
 
-@section('title', $title)
+@section('title', 'Detail Berita')
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="card card-outline card-info shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0"><i class="bi bi-newspaper me-1"></i> Detail Berita</h5>
-                <a href="{{ route('admin.berita') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('admin.berita.index') }}" class="btn btn-secondary btn-sm">
                     <i class="bi bi-arrow-left me-1"></i> Kembali
                 </a>
             </div>
@@ -27,13 +27,13 @@
                     </div>
                 @endif
 
-                <div class="fs-6 leading-relaxed" style="white-space: pre-line; line-height: 1.8;">
+                <div class="fs-6" style="white-space: pre-line; line-height: 1.8;">
                     {{ $berita->isi }}
                 </div>
             </div>
 
             <div class="card-footer d-flex justify-content-end gap-2">
-                <a href="{{ route('berita.edit', $berita->id) }}" class="btn btn-warning">
+                <a href="{{ route('admin.berita.edit', $berita->id) }}" class="btn btn-warning">
                     <i class="bi bi-pencil-square me-1"></i> Edit Berita
                 </a>
             </div>

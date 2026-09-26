@@ -9,56 +9,49 @@ use Illuminate\Support\Facades\Storage;
 class GaleriController extends Controller
 {
     /**
-     * Menampilkan daftar galeri dengan tampilan grid/card, pencarian, dan pagination.
+     * Menampilkan daftar dokumentasi galeri sekolah.
+     * Pencarian dan pagination ditangani oleh DataTables di sisi client.
      */
-    public function index(Request $request)
+    public function index()
     {
-        // 1. Inisialisasi query model Galeri
-        $query = Galeri::query();
+        $galeri = Galeri::latest('tanggal')->get();
 
-        // 2. Filter pencarian berdasarkan judul, kategori, atau keterangan
-        if ($request->filled('search')) {
-            $keyword = $request->search;
-            $query->where(function ($q) use ($keyword) {
-                $q->where('judul', 'like', "%{$keyword}%")
-                  ->orWhere('kategori', 'like', "%{$keyword}%")
-                  ->orWhere('keterangan', 'like', "%{$keyword}%");
-            });
-        }
-
-        // 3. Ambil data dengan pagination 8 item per halaman (cocok untuk grid 4 kolom)
-        $galeris = $query->latest('tanggal')->paginate(8)->withQueryString();
-
-        return view('admin.galeri.index', [
-            'title'   => 'Kelola Galeri',
-            'galeris' => $galeris,
-            'search'  => $request->search,
-        ]);
+        return view('admin.galeri.index', compact('galeri'));
     }
 
     /**
-     * Menampilkan form untuk menambah item galeri baru.
+     * Menampilkan form tambah media galeri baru.
      */
     public function create()
     {
-        return view('admin.galeri.create', [
-            'title' => 'Tambah Galeri',
-        ]);
+        return view('admin.galeri.form');
     }
 
     /**
-     * Menyimpan item galeri baru ke database.
+     * Menampilkan form edit media galeri.
      */
-    public function store(Request $request)
+    public function edit($id)
+    {
+        $galeri = Galeri::findOrFail($id);
+
+        return view('admin.galeri.form', compact('galeri'));
+    }
+
+    /**
+     * Menyimpan data galeri (gabungan Tambah dan Ubah).
+     */
+    public function save(Request $request, $id = null)
     {
         // 1. Validasi input
-        $validated = $request->validate([
-            'judul'      => 'required|string|max:50',
+        $rules = [
+            'judul'      => 'required|max:50',
             'kategori'   => 'required|in:Foto,Video',
             'tanggal'    => 'required|date',
-            'keterangan' => 'nullable|string',
-            'file'       => 'required|file|mimes:jpeg,png,jpg,mp4|max:10240',
-        ], [
+            'keterangan' => 'nullable',
+            'file'       => $id ? 'nullable|file|mimes:jpeg,png,jpg,mp4|max:10240' : 'required|file|mimes:jpeg,png,jpg,mp4|max:10240',
+        ];
+
+        $messages = [
             'judul.required'    => 'Judul dokumentasi wajib diisi.',
             'judul.max'         => 'Judul maksimal 50 karakter.',
             'kategori.required' => 'Pilih kategori (Foto/Video).',
@@ -66,18 +59,37 @@ class GaleriController extends Controller
             'file.required'     => 'File foto atau video wajib diunggah.',
             'file.mimes'        => 'Format file yang didukung: JPG, PNG, atau MP4.',
             'file.max'          => 'Ukuran file maksimal 10MB.',
-        ]);
+        ];
 
-        // 2. Upload file ke storage publik
-        if ($request->hasFile('file')) {
-            $validated['file'] = $request->file('file')->store('galeri', 'public');
+        $request->validate($rules, $messages);
+
+        // 2. Tentukan model (Tambah atau Ubah)
+        if ($id) {
+            $galeri = Galeri::findOrFail($id);
+        } else {
+            $galeri = new Galeri();
         }
 
-        // 3. Simpan data ke database
-        Galeri::create($validated);
+        // 3. Masukkan data ke model
+        $galeri->judul      = $request->judul;
+        $galeri->kategori   = $request->kategori;
+        $galeri->tanggal    = $request->tanggal;
+        $galeri->keterangan = $request->keterangan;
 
-        // 4. Redirect dengan notifikasi sukses
-        return redirect()->route('admin.galeri')->with('success', 'Dokumentasi galeri berhasil ditambahkan.');
+        // 4. Upload file jika disertakan
+        if ($request->hasFile('file')) {
+            if ($galeri->file && Storage::disk('public')->exists($galeri->file)) {
+                Storage::disk('public')->delete($galeri->file);
+            }
+            $galeri->file = $request->file('file')->store('galeri', 'public');
+        }
+
+        // 5. Simpan ke database
+        $galeri->save();
+
+        return redirect()
+            ->route('admin.galeri.index')
+            ->with('success', $id ? 'Dokumentasi galeri berhasil diperbarui.' : 'Dokumentasi galeri berhasil ditambahkan.');
     }
 
     /**
@@ -87,78 +99,24 @@ class GaleriController extends Controller
     {
         $galeri = Galeri::findOrFail($id);
 
-        return view('admin.galeri.show', [
-            'title'  => 'Detail Galeri',
-            'galeri' => $galeri,
-        ]);
+        return view('admin.galeri.show', compact('galeri'));
     }
 
     /**
-     * Menampilkan form edit galeri.
-     */
-    public function edit($id)
-    {
-        $galeri = Galeri::findOrFail($id);
-
-        return view('admin.galeri.edit', [
-            'title'  => 'Edit Galeri',
-            'galeri' => $galeri,
-        ]);
-    }
-
-    /**
-     * Memperbarui data galeri di database.
-     */
-    public function update(Request $request, $id)
-    {
-        $galeri = Galeri::findOrFail($id);
-
-        // 1. Validasi input
-        $validated = $request->validate([
-            'judul'      => 'required|string|max:50',
-            'kategori'   => 'required|in:Foto,Video',
-            'tanggal'    => 'required|date',
-            'keterangan' => 'nullable|string',
-            'file'       => 'nullable|file|mimes:jpeg,png,jpg,mp4|max:10240',
-        ], [
-            'judul.required'    => 'Judul dokumentasi wajib diisi.',
-            'judul.max'         => 'Judul maksimal 50 karakter.',
-            'kategori.required' => 'Pilih kategori (Foto/Video).',
-            'tanggal.required'  => 'Tanggal dokumentasi wajib diisi.',
-            'file.mimes'        => 'Format file yang didukung: JPG, PNG, atau MP4.',
-            'file.max'          => 'Ukuran file maksimal 10MB.',
-        ]);
-
-        // 2. Jika ada upload file baru, ganti file lama
-        if ($request->hasFile('file')) {
-            if ($galeri->file && Storage::disk('public')->exists($galeri->file)) {
-                Storage::disk('public')->delete($galeri->file);
-            }
-            $validated['file'] = $request->file('file')->store('galeri', 'public');
-        }
-
-        // 3. Update database
-        $galeri->update($validated);
-
-        // 4. Redirect kembali dengan notifikasi sukses
-        return redirect()->route('admin.galeri')->with('success', 'Dokumentasi galeri berhasil diperbarui.');
-    }
-
-    /**
-     * Menghapus item galeri dan filenya.
+     * Menghapus media galeri beserta filenya.
      */
     public function destroy($id)
     {
         $galeri = Galeri::findOrFail($id);
 
-        // Hapus file fisik dari storage
         if ($galeri->file && Storage::disk('public')->exists($galeri->file)) {
             Storage::disk('public')->delete($galeri->file);
         }
 
-        // Hapus record dari database
         $galeri->delete();
 
-        return redirect()->route('admin.galeri')->with('success', 'Dokumentasi galeri berhasil dihapus.');
+        return redirect()
+            ->route('admin.galeri.index')
+            ->with('success', 'Dokumentasi galeri berhasil dihapus.');
     }
 }

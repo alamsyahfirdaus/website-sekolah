@@ -1,6 +1,6 @@
-@extends('app')
+@extends('layouts.app')
 
-@section('title', $title)
+@section('title', 'Dashboard')
 
 @section('content')
 <!-- Sambutan Dashboard -->
@@ -26,7 +26,7 @@
                 <p class="fs-6 mb-0">Total Guru</p>
             </div>
             <i class="small-box-icon bi bi-person-badge"></i>
-            <a href="{{ route('admin.guru') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
+            <a href="{{ route('admin.guru.index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
                 Kelola Guru <i class="bi bi-arrow-right-circle ms-1"></i>
             </a>
         </div>
@@ -40,7 +40,7 @@
                 <p class="fs-6 mb-0">Total Siswa</p>
             </div>
             <i class="small-box-icon bi bi-people-fill"></i>
-            <a href="{{ route('admin.siswa') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
+            <a href="{{ route('admin.siswa.index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
                 Kelola Siswa <i class="bi bi-arrow-right-circle ms-1"></i>
             </a>
         </div>
@@ -54,7 +54,7 @@
                 <p class="fs-6 mb-0">Total Berita</p>
             </div>
             <i class="small-box-icon bi bi-newspaper"></i>
-            <a href="{{ route('admin.berita') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
+            <a href="{{ route('admin.berita.index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
                 Kelola Berita <i class="bi bi-arrow-right-circle ms-1"></i>
             </a>
         </div>
@@ -68,7 +68,7 @@
                 <p class="fs-6 mb-0">Total Ekstrakurikuler</p>
             </div>
             <i class="small-box-icon bi bi-trophy-fill"></i>
-            <a href="{{ route('admin.ekstrakurikuler') }}" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-dark-subtle">
+            <a href="{{ route('admin.ekstrakurikuler.index') }}" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-dark-subtle">
                 Kelola Ekstrakurikuler <i class="bi bi-arrow-right-circle ms-1"></i>
             </a>
         </div>
@@ -82,7 +82,7 @@
                 <p class="fs-6 mb-0">Total Dokumentasi Galeri</p>
             </div>
             <i class="small-box-icon bi bi-images"></i>
-            <a href="{{ route('admin.galeri') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
+            <a href="{{ route('admin.galeri.index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover py-2 d-block text-center border-top border-white-50">
                 Kelola Galeri <i class="bi bi-arrow-right-circle ms-1"></i>
             </a>
         </div>
@@ -123,8 +123,8 @@
                             <span class="fw-semibold">{{ $profilSekolah->tahun_berdiri }}</span>
                         </li>
                     </ul>
-                    <a href="{{ route('admin.profil') }}" class="btn btn-outline-primary btn-sm w-100">
-                        <i class="bi bi-eye me-1"></i> Buka Profil Sekolah Lengkap
+                    <a href="{{ route('admin.profil-sekolah') }}" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-pencil-square me-1"></i> Edit Profil Sekolah
                     </a>
                 @else
                     <p class="text-muted mb-0">Data profil sekolah belum tersedia.</p>
@@ -138,14 +138,14 @@
         <div class="card card-outline card-info shadow-sm h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0"><i class="bi bi-newspaper me-1"></i> Berita & Artikel Terbaru</h5>
-                <a href="{{ route('admin.berita') }}" class="btn btn-sm btn-outline-secondary">Lihat Semua</a>
+                <a href="{{ route('admin.berita.index') }}" class="btn btn-sm btn-outline-secondary">Lihat Semua</a>
             </div>
             <div class="card-body p-0">
                 <div class="list-group list-group-flush">
                     @forelse ($beritaTerbaru as $b)
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <div>
-                                <a href="{{ route('berita.show', $b->id) }}" class="fw-semibold text-decoration-none text-dark d-block">
+                                <a href="{{ route('admin.berita.show', $b->id) }}" class="fw-semibold text-decoration-none text-dark d-block">
                                     {{ $b->judul }}
                                 </a>
                                 <small class="text-muted">
@@ -153,7 +153,7 @@
                                     <i class="bi bi-person me-1"></i> {{ $b->user->name ?? 'Admin' }}
                                 </small>
                             </div>
-                            <a href="{{ route('berita.show', $b->id) }}" class="btn btn-sm btn-light border">
+                            <a href="{{ route('admin.berita.show', $b->id) }}" class="btn btn-sm btn-light border">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </div>

@@ -1,30 +1,18 @@
-@extends('app')
+@extends('layouts.app')
 
-@section('title', $title)
+@section('title', 'Kelola Siswa')
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
-    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <a href="{{ route('siswa.create') }}" class="btn btn-primary">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title mb-0">Daftar Siswa Sekolah</h5>
+        <a href="{{ route('admin.siswa.create') }}" class="btn btn-primary btn-sm">
             <i class="bi bi-person-plus me-1"></i> Tambah Siswa
         </a>
-
-        <!-- Form Pencarian -->
-        <form action="{{ route('admin.siswa') }}" method="GET" class="d-flex" style="max-width: 320px;">
-            <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Cari nama, NISN, angkatan..." value="{{ request('search') }}">
-            <button type="submit" class="btn btn-outline-secondary btn-sm me-1">
-                <i class="bi bi-search"></i>
-            </button>
-            @if (request('search'))
-                <a href="{{ route('admin.siswa') }}" class="btn btn-outline-danger btn-sm" title="Reset">
-                    <i class="bi bi-x-circle"></i>
-                </a>
-            @endif
-        </form>
     </div>
 
-    <div class="card-body table-responsive p-0">
-        <table class="table table-hover align-middle mb-0">
+    <div class="card-body">
+        <table id="tableSiswa" class="table table-bordered table-striped table-hover align-middle">
             <thead class="table-light">
                 <tr>
                     <th style="width: 50px;" class="text-center">No</th>
@@ -32,17 +20,17 @@
                     <th>Nama Siswa</th>
                     <th>Jenis Kelamin</th>
                     <th>Tahun Masuk</th>
-                    <th style="width: 220px;" class="text-center">Aksi</th>
+                    <th style="width: 200px;" class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($siswas as $index => $siswa)
+                @foreach ($siswa as $item)
                     <tr>
-                        <td class="text-center">{{ $siswas->firstItem() + $index }}</td>
-                        <td><span class="badge text-bg-light border font-monospace">{{ $siswa->nisn }}</span></td>
-                        <td class="fw-semibold">{{ $siswa->nama_siswa }}</td>
+                        <td class="text-center">{{ $loop->iteration }}</td>
+                        <td><span class="badge text-bg-light border font-monospace">{{ $item->nisn }}</span></td>
+                        <td class="fw-semibold">{{ $item->nama_siswa }}</td>
                         <td>
-                            @if ($siswa->jenis_kelamin == 'Laki-Laki')
+                            @if ($item->jenis_kelamin == 'Laki-Laki')
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
                                     <i class="bi bi-gender-male me-1"></i> Laki-Laki
                                 </span>
@@ -52,41 +40,46 @@
                                 </span>
                             @endif
                         </td>
-                        <td>{{ $siswa->tahun_masuk }}</td>
+                        <td>{{ $item->tahun_masuk }}</td>
                         <td class="text-center">
-                            <div class="d-inline-flex gap-1">
-                                <a href="{{ route('siswa.show', $siswa->id) }}" class="btn btn-info btn-sm text-white" title="Lihat Detail">
-                                    <i class="bi bi-eye"></i> Detail
-                                </a>
-                                <a href="{{ route('siswa.edit', $siswa->id) }}" class="btn btn-warning btn-sm" title="Edit Data">
-                                    <i class="bi bi-pencil-square"></i> Edit
-                                </a>
-                                <form action="{{ route('siswa.destroy', $siswa->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus Data">
-                                        <i class="bi bi-trash"></i> Hapus
-                                    </button>
-                                </form>
-                            </div>
+                            <a href="{{ route('admin.siswa.show', $item->id) }}" class="btn btn-info btn-sm text-white" title="Detail">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
+                            <a href="{{ route('admin.siswa.edit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <form action="{{ route('admin.siswa.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">
-                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                            Belum ada data siswa yang ditemukan.
-                        </td>
-                    </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>
-
-    @if ($siswas->hasPages())
-        <div class="card-footer clearfix bg-body">
-            {{ $siswas->links() }}
-        </div>
-    @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+        $('#tableSiswa').DataTable({
+            language: {
+                search: "Cari Data:",
+                lengthMenu: "Tampilkan _MENU_ baris",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Tidak ada data yang ditampilkan",
+                zeroRecords: "Data tidak ditemukan",
+                paginate: {
+                    previous: "Sebelumnya",
+                    next: "Selanjutnya"
+                }
+            }
+        });
+    });
+</script>
+@endpush

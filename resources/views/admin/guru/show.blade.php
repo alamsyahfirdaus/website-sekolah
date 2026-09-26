@@ -1,6 +1,6 @@
-@extends('app')
+@extends('layouts.app')
 
-@section('title', $title)
+@section('title', 'Detail Guru')
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="card card-outline card-info shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0"><i class="bi bi-person-lines-fill me-1"></i> Detail Guru</h5>
-                <a href="{{ route('admin.guru') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary btn-sm">
                     <i class="bi bi-arrow-left me-1"></i> Kembali
                 </a>
             </div>
@@ -16,10 +16,10 @@
             <div class="card-body">
                 <div class="text-center mb-4">
                     @if ($guru->foto && file_exists(public_path('storage/' . $guru->foto)))
-                        <img src="{{ asset('storage/' . $guru->foto) }}" alt="{{ $guru->nama_guru }}" class="rounded-circle shadow" style="width: 130px; height: 130px; object-fit: cover;">
+                        <img src="{{ asset('storage/' . $guru->foto) }}" alt="{{ $guru->nama_guru }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover;">
                     @else
-                        <div class="bg-secondary-subtle rounded-circle d-inline-flex align-items-center justify-content-center text-secondary shadow-sm" style="width: 130px; height: 130px;">
-                            <i class="bi bi-person-fill" style="font-size: 4rem;"></i>
+                        <div class="bg-secondary-subtle rounded-circle d-inline-flex align-items-center justify-content-center text-secondary shadow-sm" style="width: 120px; height: 120px;">
+                            <i class="bi bi-person-fill" style="font-size: 3.5rem;"></i>
                         </div>
                     @endif
                     <h4 class="mt-3 mb-0 fw-bold">{{ $guru->nama_guru }}</h4>
@@ -30,7 +30,7 @@
                     <tbody>
                         <tr>
                             <th style="width: 35%;" class="bg-body-tertiary">NIP</th>
-                            <td>{{ $guru->nip ?? 'Tidak ada NIP' }}</td>
+                            <td>{{ $guru->nip ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-body-tertiary">Mata Pelajaran</th>
@@ -59,7 +59,7 @@
             </div>
 
             <div class="card-footer d-flex justify-content-end gap-2">
-                <a href="{{ route('guru.edit', $guru->id) }}" class="btn btn-warning">
+                <a href="{{ route('admin.guru.edit', $guru->id) }}" class="btn btn-warning">
                     <i class="bi bi-pencil-square me-1"></i> Edit Data Guru
                 </a>
             </div>

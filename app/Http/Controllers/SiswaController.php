@@ -8,126 +8,84 @@ use Illuminate\Http\Request;
 class SiswaController extends Controller
 {
     /**
-     * Menampilkan daftar seluruh siswa dengan pencarian dan pagination.
+     * Menampilkan daftar semua siswa.
+     * Pencarian, sorting, dan pagination ditangani langsung oleh DataTables.
      */
-    public function index(Request $request)
+    public function index()
     {
-        // 1. Inisialisasi query model Siswa
-        $query = Siswa::query();
+        $siswa = Siswa::latest()->get();
 
-        // 2. Filter pencarian berdasarkan nama, NISN, atau tahun masuk
-        if ($request->filled('search')) {
-            $keyword = $request->search;
-            $query->where(function ($q) use ($keyword) {
-                $q->where('nama_siswa', 'like', "%{$keyword}%")
-                  ->orWhere('nisn', 'like', "%{$keyword}%")
-                  ->orWhere('tahun_masuk', 'like', "%{$keyword}%")
-                  ->orWhere('jenis_kelamin', 'like', "%{$keyword}%");
-            });
-        }
-
-        // 3. Ambil data dengan pagination 10 item per halaman
-        $siswas = $query->latest()->paginate(10)->withQueryString();
-
-        return view('admin.siswa.index', [
-            'title'  => 'Kelola Siswa',
-            'siswas' => $siswas,
-            'search' => $request->search,
-        ]);
+        return view('admin.siswa.index', compact('siswa'));
     }
 
     /**
-     * Menampilkan form untuk menambah data siswa.
+     * Menampilkan form untuk menambah siswa baru.
      */
     public function create()
     {
-        return view('admin.siswa.create', [
-            'title' => 'Tambah Siswa',
-        ]);
+        return view('admin.siswa.form');
     }
 
     /**
-     * Menyimpan data siswa baru ke database.
-     */
-    public function store(Request $request)
-    {
-        // 1. Validasi input
-        $validated = $request->validate([
-            'nisn'          => 'required|digits:10|unique:siswa,nisn',
-            'nama_siswa'    => 'required|string|max:40',
-            'jenis_kelamin' => 'required|in:Laki-Laki,Perempuan',
-            'tahun_masuk'   => 'required|digits:4|integer',
-        ], [
-            'nisn.required'          => 'NISN wajib diisi.',
-            'nisn.digits'            => 'NISN harus terdiri dari 10 digit angka.',
-            'nisn.unique'            => 'NISN sudah terdaftar.',
-            'nama_siswa.required'    => 'Nama siswa wajib diisi.',
-            'jenis_kelamin.required' => 'Pilih jenis kelamin.',
-            'tahun_masuk.required'   => 'Tahun masuk wajib diisi.',
-            'tahun_masuk.digits'     => 'Tahun masuk harus 4 digit tahun (contoh: 2024).',
-        ]);
-
-        // 2. Simpan ke database
-        Siswa::create($validated);
-
-        // 3. Redirect dengan pesan sukses
-        return redirect()->route('admin.siswa')->with('success', 'Data siswa berhasil ditambahkan.');
-    }
-
-    /**
-     * Menampilkan detail informasi seorang siswa.
-     */
-    public function show($id)
-    {
-        $siswa = Siswa::findOrFail($id);
-
-        return view('admin.siswa.show', [
-            'title' => 'Detail Siswa',
-            'siswa' => $siswa,
-        ]);
-    }
-
-    /**
-     * Menampilkan form edit data siswa.
+     * Menampilkan form untuk mengedit siswa yang sudah ada.
      */
     public function edit($id)
     {
         $siswa = Siswa::findOrFail($id);
 
-        return view('admin.siswa.edit', [
-            'title' => 'Edit Siswa',
-            'siswa' => $siswa,
-        ]);
+        return view('admin.siswa.form', compact('siswa'));
     }
 
     /**
-     * Memperbarui data siswa di database.
+     * Menyimpan data siswa (gabungan Tambah dan Ubah).
      */
-    public function update(Request $request, $id)
+    public function save(Request $request, $id = null)
     {
-        $siswa = Siswa::findOrFail($id);
-
         // 1. Validasi input
-        $validated = $request->validate([
-            'nisn'          => 'required|digits:10|unique:siswa,nisn,' . $siswa->id,
+        $request->validate([
+            'nisn'          => 'required|digits:10|unique:siswa,nisn,' . ($id ?? 'NULL') . ',id',
             'nama_siswa'    => 'required|string|max:40',
             'jenis_kelamin' => 'required|in:Laki-Laki,Perempuan',
             'tahun_masuk'   => 'required|digits:4|integer',
         ], [
             'nisn.required'          => 'NISN wajib diisi.',
-            'nisn.digits'            => 'NISN harus terdiri dari 10 digit angka.',
+            'nisn.digits'            => 'NISN harus 10 digit angka.',
             'nisn.unique'            => 'NISN sudah terdaftar pada siswa lain.',
             'nama_siswa.required'    => 'Nama siswa wajib diisi.',
             'jenis_kelamin.required' => 'Pilih jenis kelamin.',
             'tahun_masuk.required'   => 'Tahun masuk wajib diisi.',
-            'tahun_masuk.digits'     => 'Tahun masuk harus 4 digit tahun (contoh: 2024).',
+            'tahun_masuk.digits'     => 'Tahun masuk harus 4 digit angka (contoh: 2024).',
         ]);
 
-        // 2. Update database
-        $siswa->update($validated);
+        // 2. Tentukan model (Tambah atau Ubah)
+        if ($id) {
+            $siswa = Siswa::findOrFail($id);
+        } else {
+            $siswa = new Siswa();
+        }
 
-        // 3. Redirect kembali dengan notifikasi sukses
-        return redirect()->route('admin.siswa')->with('success', 'Data siswa berhasil diperbarui.');
+        // 3. Masukkan data ke model
+        $siswa->nisn          = $request->nisn;
+        $siswa->nama_siswa    = $request->nama_siswa;
+        $siswa->jenis_kelamin = $request->jenis_kelamin;
+        $siswa->tahun_masuk   = $request->tahun_masuk;
+
+        // 4. Simpan ke database
+        $siswa->save();
+
+        return redirect()
+            ->route('admin.siswa.index')
+            ->with('success', $id ? 'Data siswa berhasil diperbarui.' : 'Data siswa berhasil disimpan.');
+    }
+
+    /**
+     * Menampilkan detail seorang siswa.
+     */
+    public function show($id)
+    {
+        $siswa = Siswa::findOrFail($id);
+
+        return view('admin.siswa.show', compact('siswa'));
     }
 
     /**
@@ -138,6 +96,8 @@ class SiswaController extends Controller
         $siswa = Siswa::findOrFail($id);
         $siswa->delete();
 
-        return redirect()->route('admin.siswa')->with('success', 'Data siswa berhasil dihapus.');
+        return redirect()
+            ->route('admin.siswa.index')
+            ->with('success', 'Data siswa berhasil dihapus.');
     }
 }

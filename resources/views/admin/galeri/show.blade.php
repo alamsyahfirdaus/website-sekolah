@@ -1,6 +1,6 @@
-@extends('app')
+@extends('layouts.app')
 
-@section('title', $title)
+@section('title', 'Detail Galeri')
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="card card-outline card-info shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0"><i class="bi bi-images me-1"></i> Detail Dokumentasi Galeri</h5>
-                <a href="{{ route('admin.galeri') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('admin.galeri.index') }}" class="btn btn-secondary btn-sm">
                     <i class="bi bi-arrow-left me-1"></i> Kembali
                 </a>
             </div>
@@ -56,7 +56,7 @@
             </div>
 
             <div class="card-footer d-flex justify-content-end gap-2">
-                <a href="{{ route('galeri.edit', $galeri->id) }}" class="btn btn-warning">
+                <a href="{{ route('admin.galeri.edit', $galeri->id) }}" class="btn btn-warning">
                     <i class="bi bi-pencil-square me-1"></i> Edit Galeri
                 </a>
             </div>
