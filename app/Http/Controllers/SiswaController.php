@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class SiswaController extends Controller
 {
@@ -16,7 +17,12 @@ class SiswaController extends Controller
     
     public function addEdit($id = null)
     {
-        $siswa = Siswa::find($id);
+        // try catch untuk menangani kasus ketika ID yang dienkripsi tidak valid atau tidak ditemukan
+        try { 
+            $siswa = $id ? Siswa::findOrFail(Crypt::decrypt($id)) : null;
+        } catch (\Exception $e) {
+            return redirect()->route('admin.siswa.index')->with('error', 'Data siswa tidak ditemukan.');
+        }
 
         return view('admin.siswa.form', $siswa ? compact('siswa') : []);
     }
@@ -65,7 +71,11 @@ class SiswaController extends Controller
      */
     public function show($id)
     {
-        $siswa = Siswa::find($id);
+        try {
+            $siswa = Siswa::findOrFail(Crypt::decrypt($id));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.siswa.index')->with('error', 'Data siswa tidak ditemukan.');
+        }
 
         if (!$siswa) {
             return redirect()
@@ -81,7 +91,11 @@ class SiswaController extends Controller
      */
     public function destroy($id)
     {
-        $siswa = Siswa::find($id);
+        try {
+            $siswa = Siswa::findOrFail(Crypt::decrypt($id));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.siswa.index')->with('error', 'Data siswa tidak ditemukan.');
+        }
 
         if (!$siswa) {
             return redirect()

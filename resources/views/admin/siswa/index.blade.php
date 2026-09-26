@@ -42,13 +42,13 @@
                         </td>
                         <td>{{ $item->tahun_masuk }}</td>
                         <td class="text-center">
-                            <a href="{{ route('admin.siswa.show', $item->id) }}" class="btn btn-info btn-sm text-white" title="Detail">
+                            <a href="{{ route('admin.siswa.show', Crypt::encrypt($item->id)) }}" class="btn btn-info btn-sm text-white" title="Detail">
                                 <i class="bi bi-eye"></i> Detail
                             </a>
-                            <a href="{{ route('admin.siswa.addEdit', $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                            <a href="{{ route('admin.siswa.addEdit', Crypt::encrypt($item->id)) }}" class="btn btn-warning btn-sm" title="Edit">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                            <form action="{{ route('admin.siswa.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                            <form action="{{ route('admin.siswa.delete', Crypt::encrypt($item->id)) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
