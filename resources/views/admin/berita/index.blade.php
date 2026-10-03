@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Berita')
+@section('title', 'Berita')
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
@@ -81,14 +81,14 @@
 </div>
 @endsection
 
-@push('scripts')
+{{-- @push('scripts')
 <script>
     $(document).ready(function () {
         $('#tableBerita').DataTable({
             responsive: true,
             autoWidth: false,
             language: {
-                search: "Cari Data:",
+                search: "Cari Data:",-
                 lengthMenu: "Tampilkan _MENU_ baris",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
                 infoEmpty: "Tidak ada data yang ditampilkan",
@@ -101,4 +101,4 @@
         });
     });
 </script>
-@endpush
+@endpush --}}

@@ -17,9 +17,13 @@
     <!-- AdminLTE v4 CSS -->
     <link rel="stylesheet" href="{{ asset('css/adminlte.css') }}" />
 
+    {{-- <link rel="stylesheet" href="{{ asset('datatables/css/dataTables.bootstrap5.css') }}"> --}}
+    <link rel="stylesheet" href="{{ asset('DataTables/datatables.css') }}">
+    <link rel="stylesheet" href="{{ asset('DataTables/datatables.min.css') }}">
+
     <!-- DataTables Bootstrap 5 & Responsive CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" />
+    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" /> --}}
 
     <style>
         /* ==========================================================
@@ -230,7 +234,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.guru.index') }}" class="nav-link {{ request()->routeIs('admin.guru.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-person-badge"></i>
-                                <p>Kelola Guru</p>
+                                <p>Guru</p>
                             </a>
                         </li>
 
@@ -238,7 +242,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.siswa.index') }}" class="nav-link {{ request()->routeIs('admin.siswa.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-people-fill"></i>
-                                <p>Kelola Siswa</p>
+                                <p>Siswa</p>
                             </a>
                         </li>
                         @endif
@@ -247,7 +251,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.berita.index') }}" class="nav-link {{ request()->routeIs('admin.berita.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-newspaper"></i>
-                                <p>Kelola Berita</p>
+                                <p>Berita</p>
                             </a>
                         </li>
 
@@ -255,7 +259,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.ekstrakurikuler.index') }}" class="nav-link {{ request()->routeIs('admin.ekstrakurikuler.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-trophy-fill"></i>
-                                <p>Kelola Ekstrakurikuler</p>
+                                <p>Ekstrakurikuler</p>
                             </a>
                         </li>
 
@@ -263,7 +267,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.galeri.index') }}" class="nav-link {{ request()->routeIs('admin.galeri.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-images"></i>
-                                <p>Kelola Galeri</p>
+                                <p>Galeri</p>
                             </a>
                         </li>
 
@@ -272,7 +276,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.user.index') }}" class="nav-link {{ request()->routeIs('admin.user.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-person-gear"></i>
-                                <p>Kelola User</p>
+                                <p>Pengelola</p>
                             </a>
                         </li>
                         @endif
@@ -311,13 +315,9 @@
                     @endif
 
                     <script>
-                        setTimeout(function() {
-                            var alertElement = document.querySelector('.alert');
-                            if (alertElement) {
-                                var alert = new bootstrap.Alert(alertElement);
-                                alert.close();
-                            }
-                        }, 5000); // 5000ms = 5 detik
+                        setTimeout(() => {
+                            document.querySelector('.alert')?.remove();
+                        }, 5000);
                     </script>
 
                     @if ($errors->any())
@@ -345,19 +345,27 @@
     </div>
 
     <!-- Scripts: OverlayScrollbars, Popper, Bootstrap 5, AdminLTE -->
-    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
     <script src="{{ asset('js/adminlte.js') }}"></script>
 
-    <!-- jQuery 3.7.1 (Dibutuhkan oleh DataTables) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('js/jquery-4.0.0.min.js') }}"></script>
+    <script src="{{ asset('DataTables/datatables.js') }}"></script>
+    <script src="{{ asset('DataTables/datatables.min.js') }}"></script>
+
 
     <!-- DataTables Core, Bootstrap 5 Integration & Responsive Extension -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    // <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    {{-- // <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></scrip> --}}
+    {{-- // <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script> --}}
+    {{-- // <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script> --}}
+    
+    <script>
+        $(document).ready(function() {
+            $('.table').DataTable();
+        });
+    </script>
 
     @stack('scripts')
     @yield('scripts')

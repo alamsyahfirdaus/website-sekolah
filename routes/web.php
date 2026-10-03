@@ -16,9 +16,9 @@ Route::get('/', [DashboardController::class, 'publicDashboard'])->name('public.d
 
 // AUTENTIKASI (HANYA BISA DIAKSES JIKA BELUM LOGIN)
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'index'])->name('login');
     Route::get('/admin/login', [AuthController::class, 'index'])->name('admin.login');
     Route::post('/login-proses', [AuthController::class, 'processLogin'])->name('proses.login');
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
 });
 
 // LOGOUT

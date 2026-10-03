@@ -34,7 +34,7 @@ class SiswaController extends Controller
                 ->with('error', 'Data siswa tidak ditemukan.');
         }
 
-        return view('admin.siswa.form', compact('siswa'));
+    return view('admin.siswa.form', compact('siswa'));
     }
 
     /**

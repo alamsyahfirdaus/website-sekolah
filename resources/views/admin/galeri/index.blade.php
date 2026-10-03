@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Galeri')
+@section('title', 'Galeri')
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
@@ -87,7 +87,7 @@
 </div>
 @endsection
 
-@push('scripts')
+{{-- @push('scripts')
 <script>
     $(document).ready(function () {
         $('#tableGaleri').DataTable({
@@ -107,4 +107,4 @@
         });
     });
 </script>
-@endpush
+@endpush --}}

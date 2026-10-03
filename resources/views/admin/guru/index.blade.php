@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Guru')
+@section('title', 'Guru')
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
@@ -69,7 +69,7 @@
     </div>
 </div>
 @endsection
-
+{{-- 
 @push('scripts')
 <script>
     $(document).ready(function () {
@@ -90,4 +90,4 @@
         });
     });
 </script>
-@endpush
+@endpush --}}

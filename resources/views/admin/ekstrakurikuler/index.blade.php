@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Ekstrakurikuler')
+@section('title', 'Ekstrakurikuler')
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
@@ -78,7 +78,7 @@
 </div>
 @endsection
 
-@push('scripts')
+{{-- @push('scripts')
 <script>
     $(document).ready(function () {
         $('#tableEkstrakurikuler').DataTable({
@@ -98,4 +98,4 @@
         });
     });
 </script>
-@endpush
+@endpush --}}

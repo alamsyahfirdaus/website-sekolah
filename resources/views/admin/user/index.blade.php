@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola User')
+@section('title', 'User')
 
 @section('content')
 <div class="card card-outline card-primary shadow-sm mb-4">
