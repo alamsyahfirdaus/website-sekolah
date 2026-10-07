@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Route;
 
 // LANDING PAGE PUBLIK
 Route::get('/', [DashboardController::class, 'publicDashboard'])->name('public.dashboard');
+Route::get('/profile', [ProfilSekolahController::class, 'publicProfil'])->name('public.profile');
+Route::get('/ekstrakurikuler', [EkstrakurikulerController::class, 'publicEkstrakurikuler'])->name('public.ekstrakurikuler');
+Route::get('/guru', [GuruController::class, 'publicGuru'])->name('public.guru');
+Route::get('/siswa', [SiswaController::class, 'publicSiswa'])->name('public.siswa');
+Route::get('/berita', [BeritaController::class, 'publicBerita'])->name('public.berita');
+Route::get('/galeri', [GaleriController::class, 'publicGaleri'])->name('public.galeri');
 
 // AUTENTIKASI (HANYA BISA DIAKSES JIKA BELUM LOGIN)
 Route::middleware('guest')->group(function () {

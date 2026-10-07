@@ -14,7 +14,7 @@ class GuruController extends Controller
      */
     public function index()
     {
-        $guru = Guru::latest()->get();
+        $guru = Guru::latest()->get(); // Berfungsi untuk mengambil semua data guru dari database, diurutkan berdasarkan waktu terbaru.
 
         return view('admin.guru.index', compact('guru'));
     }

@@ -1,99 +1,89 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }} | Selamat Datang</title>
-    <link rel="stylesheet" href="{{ asset('css/adminlte.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ $title }}</title>
+    <link rel="stylesheet" href="{{ asset('dist/css/bootstrap.min.css') }}">
 </head>
-<body class="bg-light">
-    <!-- Navbar Sederhana -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-primary navbar-dark">
         <div class="container">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{{ url('/') }}">
-                @if ($profilSekolah && $profilSekolah->logo && file_exists(public_path('storage/' . $profilSekolah->logo)))
-                    <img src="{{ asset('storage/' . $profilSekolah->logo) }}" alt="Logo" style="height: 36px;">
-                @else
-                    <img src="{{ asset('img/smk-ypc.png') }}" alt="Logo" style="height: 36px;">
-                @endif
-                {{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }}
-            </a>
-            <div class="ms-auto">
-                @auth
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm">
-                        <i class="bi bi-speedometer2 me-1"></i> Panel Admin
-                    </a>
-                @else
-                    <a href="{{ route('admin.login') }}" class="btn btn-light btn-sm fw-semibold">
-                        <i class="bi bi-box-arrow-in-right me-1"></i> Login Admin
-                    </a>
-                @endauth
+            <a class="navbar-brand" href="#">{{ $profilSekolah->nama_sekolah }}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    @php
+                        $menu = [
+                            'public.dashboard' => 'Beranda',
+                            'public.profile' => 'Profil Sekolah',
+                            'public.guru' => 'Guru',
+                            'public.siswa' => 'Siswa',
+                            'public.ekstrakurikuler' => 'Ekstrakurikuler',
+                            'public.berita' => 'Berita',
+                            'public.galeri' => 'Galeri',
+                        ]
+                    @endphp
+
+                    @foreach ($menu as $route => $label)
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs($route) ? 'active' : '' }}"
+                                href="{{ route($route) }}">{{ $label }}</a>
+                        </li>
+                    @endforeach
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                  {{--   <li class="nav-item">
+                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                    </li> --}}
+                </ul>
+                {{-- <a class="btn btn-outline-success" href="{{ route('login') }}">Login</a> --}}
+                {{-- <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form> --}}
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <div class="py-5 bg-white border-bottom shadow-sm text-center">
-        <div class="container py-4">
-            <h1 class="display-5 fw-bold text-dark mb-3">{{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }}</h1>
-            <p class="lead text-muted col-lg-8 mx-auto mb-4">
-                {{ $profilSekolah->deskripsi ?? 'Selamat datang di portal informasi resmi sekolah.' }}
-            </p>
-            <div class="d-flex justify-content-center gap-3">
-                @auth
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-primary px-4 py-2">
-                        <i class="bi bi-speedometer2 me-1"></i> Masuk ke Dashboard Admin
-                    </a>
-                @else
-                    <a href="{{ route('admin.login') }}" class="btn btn-primary px-4 py-2">
-                        <i class="bi bi-lock-fill me-1"></i> Masuk Sebagai Administrator
-                    </a>
-                @endauth
-            </div>
-        </div>
+    <div class="container mt-5">
+        @yield('content')
     </div>
 
-    <!-- Info Sekolah Section -->
-    @if ($profilSekolah)
-    <div class="container my-5">
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="text-primary fs-3 mb-2"><i class="bi bi-info-circle-fill"></i></div>
-                        <h5 class="fw-bold">Tentang Sekolah</h5>
-                        <p class="text-muted small mb-1"><strong>NPSN:</strong> {{ $profilSekolah->npsn }}</p>
-                        <p class="text-muted small mb-1"><strong>Kepala Sekolah:</strong> {{ $profilSekolah->kepala_sekolah }}</p>
-                        <p class="text-muted small mb-0"><strong>Tahun Berdiri:</strong> {{ $profilSekolah->tahun_berdiri }}</p>
-                    </div>
-                </div>
+    {{-- <div class="container">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="col-md-4 d-flex align-items-center">
+                <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
+                    aria-label="Bootstrap">
+                    <svg class="bi" width="30" height="24" aria-hidden="true">
+                        <use xlink:href="#bootstrap"></use>
+                    </svg>
+                </a>
+                <span class="mb-3 mb-md-0 text-body-secondary">&copy; 2025 Company, Inc</span>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="text-success fs-3 mb-2"><i class="bi bi-flag-fill"></i></div>
-                        <h5 class="fw-bold">Visi & Misi</h5>
-                        <p class="text-muted small mb-0" style="white-space: pre-line;">{{ Str::limit($profilSekolah->visi_misi, 180) }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="text-danger fs-3 mb-2"><i class="bi bi-geo-alt-fill"></i></div>
-                        <h5 class="fw-bold">Alamat & Kontak</h5>
-                        <p class="text-muted small mb-1">{{ $profilSekolah->alamat }}</p>
-                        <p class="text-muted small mb-0"><strong>Telp/WA:</strong> {{ $profilSekolah->kontak }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    <footer class="py-4 bg-light text-center text-muted small border-top mt-5">
-        &copy; {{ date('Y') }} {{ $profilSekolah->nama_sekolah ?? 'Website Sekolah' }}. Dikembangkan untuk Media Pembelajaran Siswa SMK.
-    </footer>
+        </footer>
+    </div> --}}
+    <script src="{{ asset('dist/js/bootstrap.bundle.min.js') }}"></script>
 </body>
+
 </html>
